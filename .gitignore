@@ -17,3 +17,14 @@ Thumbs.db
 credentials/
 *.key
 *.pem
+
+# Generated files
+data/session_log.json
+data/templates/cv/.thumbnail
+
+# Generated CV files inside application folders (keep job_description.md)
+applications/**/cv.html
+applications/**/profile.json
+applications/**/support.js
+applications/**/image-slot.js
+applications/**/uploads/
