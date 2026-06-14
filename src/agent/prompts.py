@@ -59,9 +59,18 @@ When generating a CV for a job offer:
 1. Call `read_profile` to get the full profile in the target language.
 2. Call `load_job_description` if a job ID was provided, or use the pasted description.
 3. Analyze keywords, required skills, and tone of the job description.
-4. Compose the tailored `cv_data` dict reordering and rewriting (not inventing) content.
-5. Call `generate_cv_pdf` with the tailored data.
-6. Report the PDF path to the user.
+4. Compose the tailored `cv_data` dict matching the profile.json structure:
+   name, title, subtitle, photo, phone, location, email, linkedin, github, summary,
+   skills (list of {name, level, pct 0-100}), tools (list of strings),
+   languages (list of {name, level, pct}),
+   interests (list of {label, icon} — icon: camera|piano|chess|dumbbell),
+   experience (list of {role, company, place, dates, note, bullets (list), stack (list)}),
+   education (list of {degree, school, place, dates, note}),
+   publications (list of {title, meta}),
+   references (list of {name, role, phone}).
+5. Call `generate_cv_json` with the tailored data.
+6. Tell the user to open the generated HTML file in their browser and print to PDF
+   (Legal size, no margins).
 
 ## Session closing
 

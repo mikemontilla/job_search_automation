@@ -84,10 +84,12 @@ TOOLS = [
         },
     },
     {
-        "name": "generate_cv_pdf",
+        "name": "generate_cv_json",
         "description": (
-            "Render the HTML/CSS Jinja2 CV template with the provided data and compile it to PDF. "
-            "Call this once per language needed. The PDF is saved in applications/<job_slug>/."
+            "Generate a tailored profile.json for the CV template and copy the template files "
+            "to applications/<job_slug>/<language>/. The user then opens 'CV Template.dc.html' "
+            "in a browser and prints to PDF (Legal size, no margins). "
+            "Call once per language needed."
         ),
         "input_schema": {
             "type": "object",
@@ -104,19 +106,16 @@ TOOLS = [
                 "cv_data": {
                     "type": "object",
                     "description": (
-                        "Structured CV content tailored for the job offer. "
-                        "Keys: name, title, location, email, linkedin, github, summary, "
-                        "experience (list of {company, role, period, location, bullets, stack}), "
-                        "education (list of {institution, degree, period, details}), "
-                        "publications (list of strings), "
-                        "skills (object with programming, frameworks, devops, areas), "
-                        "languages (list of {language, level, certification}), "
-                        "interests (list of strings), projects (list of strings), hobbies (string)."
+                        "Structured CV content matching profile.json format: "
+                        "name, title, subtitle, photo, phone, location, email, linkedin, github, summary, "
+                        "skills (list of {name, level, pct}), tools (list of strings), "
+                        "languages (list of {name, level, pct}), "
+                        "interests (list of {label, icon} — icon: camera|piano|chess|dumbbell), "
+                        "experience (list of {role, company, place, dates, note, bullets, stack}), "
+                        "education (list of {degree, school, place, dates, note}), "
+                        "publications (list of {title, meta}), "
+                        "references (list of {name, role, phone})."
                     ),
-                },
-                "accent_color": {
-                    "type": "string",
-                    "description": "CSS hex color for section headings (e.g. '#2563eb'). Optional, defaults to dark blue.",
                 },
             },
             "required": ["language", "job_slug", "cv_data"],

@@ -11,9 +11,9 @@ def _load_job_description(job_id):
     return load_job_description(job_id)
 
 
-def _generate_cv_pdf(language, job_slug, cv_data, accent_color=None):
-    from src.agent.tools.cv_gen import generate_cv_pdf
-    return generate_cv_pdf(language, job_slug, cv_data, accent_color)
+def _generate_cv_json(language, job_slug, cv_data):
+    from src.agent.tools.cv_gen import generate_cv_json
+    return generate_cv_json(language, job_slug, cv_data)
 
 
 def _save_session_note(note):
@@ -30,8 +30,8 @@ TOOL_HANDLERS = {
     ),
     "list_job_offers": lambda args: _list_job_offers(),
     "load_job_description": lambda args: _load_job_description(args["job_id"]),
-    "generate_cv_pdf": lambda args: _generate_cv_pdf(
-        args["language"], args["job_slug"], args["cv_data"], args.get("accent_color")
+    "generate_cv_json": lambda args: _generate_cv_json(
+        args["language"], args["job_slug"], args["cv_data"]
     ),
     "save_session_note": lambda args: _save_session_note(args["note"]),
 }

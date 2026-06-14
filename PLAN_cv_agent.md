@@ -148,6 +148,17 @@ sudo apt install libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz0b libcairo2 fonts-
 
 ---
 
+## Servidor local (pendiente)
+
+Montar un servidor **FastAPI** (`python -m agent.server`, puerto 8000) que sirva:
+- `applications/` → URLs de CV para abrir en browser con foto y assets
+- `data/templates/cv/` → plantilla base
+- En el futuro: dashboard de tracking (paso 7.1 del README), APIs internas
+
+Esto reemplaza el enfoque de base64 en cv_gen.py y centraliza todo acceso web del proyecto.
+
+---
+
 ## Verificación Final
 
 - `python -m agent` → el agente saluda y hace preguntas proactivas
