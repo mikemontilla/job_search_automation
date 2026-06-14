@@ -2,16 +2,25 @@ import json
 import os
 
 import anthropic
+import yaml
 from dotenv import load_dotenv
 
 from src.agent.tools.definitions import TOOLS
 from src.agent.tools.router import dispatch
 from src.agent.prompts import SYSTEM_PROMPT
+from src.agent.config import CONFIG_DIR
 
 load_dotenv()
 
-MODEL = "claude-sonnet-4-6"
-MAX_TOKENS = 4096
+def _load_config() -> dict:
+    path = CONFIG_DIR / "agent_config.yaml"
+    if path.exists():
+        return yaml.safe_load(path.read_text(encoding="utf-8"))
+    return {}
+
+_config = _load_config()
+MODEL = _config.get("model", "claude-sonnet-4-6")
+MAX_TOKENS = _config.get("max_tokens", 4096)
 
 
 class JobAgent:

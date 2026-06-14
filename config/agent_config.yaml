@@ -1,0 +1,12 @@
+model: claude-sonnet-4-6
+max_tokens: 4096
+
+# Default language for CV generation when not specified
+default_cv_language: fr
+
+# Available profile photos (filenames inside data/templates/cv/uploads/)
+photos:
+  default: MIGUEL_FONDO_BLANCO_1.jpg
+  options:
+    - MIGUEL_FONDO_BLANCO_1.jpg
+    - pasted-1781359802109-0.png
