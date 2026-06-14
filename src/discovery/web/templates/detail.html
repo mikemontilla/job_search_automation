@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{{ offer.title or 'Offer' }} — Job Discovery{% endblock %}
+{% block content %}
+
+<a href="/" class="back">← Back to list</a>
+
+<article class="detail">
+  <header class="detail-head">
+    <div>
+      <h1>{{ offer.title or '(untitled)' }}</h1>
+      <p class="sub">{{ offer.company or '—' }}{% if offer.location %} · {{ offer.location }}{% endif %}{% if offer.work_mode %} · {{ offer.work_mode }}{% endif %}</p>
+    </div>
+    <div class="score-block">
+      <span class="score-badge score-{{ 'high' if offer.score and offer.score >= 70 else 'mid' if offer.score and offer.score >= 50 else 'low' }}">
+        {{ offer.score if offer.score is not none else '–' }}
+      </span>
+      {% if offer.recommended %}<span class="pill rec">Recommended</span>{% endif %}
+    </div>
+  </header>
+
+  <div class="meta-grid">
+    <div><strong>Department</strong>{{ offer.department or '—' }}</div>
+    <div><strong>Contract</strong>{{ offer.contract_type or '—' }}</div>
+    <div><strong>Experience</strong>{{ offer.years_experience or '—' }}</div>
+    <div><strong>Education</strong>{{ offer.education_level or '—' }}</div>
+    <div><strong>Status</strong>{{ offer.status }}</div>
+    <div><strong>HR contact</strong>{{ offer.hr_contact or '—' }}</div>
+  </div>
+
+  {% if offer.score is not none %}
+  <section>
+    <h2>Compatibility</h2>
+    <p class="rationale">{{ offer.rationale }}</p>
+
+    {% if offer.pros or offer.cons %}
+    <div class="pros-cons">
+      {% if offer.pros %}
+      <div class="pros-card">
+        <h3>Strengths</h3>
+        <ul>
+          {% for item in offer.pros %}
+          <li><span class="icon-pro">✓</span>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      {% if offer.cons %}
+      <div class="cons-card">
+        <h3>Gaps</h3>
+        <ul>
+          {% for item in offer.cons %}
+          <li><span class="icon-con">✗</span>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <ul class="breakdown">
+      {% for dim, val in offer.breakdown.items() %}
+      <li><span>{{ dim.replace('_', ' ') }}</span><span class="bar"><i style="width: {{ val }}%"></i></span><span>{{ val }}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if offer.summary %}<section><h2>Summary</h2><p>{{ offer.summary }}</p></section>{% endif %}
+  {% if offer.role_objectives %}<section><h2>Role objectives</h2><p>{{ offer.role_objectives }}</p></section>{% endif %}
+
+  {% if offer.responsibilities %}
+  <section><h2>Responsibilities</h2><ul>{% for r in offer.responsibilities %}<li>{{ r }}</li>{% endfor %}</ul></section>
+  {% endif %}
+  {% if offer.skills_required %}
+  <section><h2>Required skills</h2><div class="tags">{% for s in offer.skills_required %}<span class="tag">{{ s }}</span>{% endfor %}</div></section>
+  {% endif %}
+  {% if offer.skills_nice %}
+  <section><h2>Nice to have</h2><div class="tags">{% for s in offer.skills_nice %}<span class="tag soft">{{ s }}</span>{% endfor %}</div></section>
+  {% endif %}
+  {% if offer.languages_required %}
+  <section><h2>Languages</h2><div class="tags">{% for s in offer.languages_required %}<span class="tag">{{ s }}</span>{% endfor %}</div></section>
+  {% endif %}
+
+  <footer class="detail-actions">
+    <a class="btn" href="{{ offer.source_url }}" target="_blank">Open original ↗</a>
+    <button class="btn" hx-post="/offer/{{ offer.id }}/status?value=applying&redirect=1">Mark applying</button>
+    <button class="btn danger" hx-post="/offer/{{ offer.id }}/delete?redirect=1"
+            hx-confirm="Delete this offer?">Delete</button>
+  </footer>
+</article>
+
+{% endblock %}

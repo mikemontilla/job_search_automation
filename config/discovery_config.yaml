@@ -1,0 +1,31 @@
+# Job discovery pipeline configuration
+
+# Model used for the single extract+score AI call per new offer.
+# Kept cheap on purpose: the task is bounded and the volume is high.
+model: claude-haiku-4-5
+
+# Max tokens for the scoring response.
+max_tokens: 2048
+
+# Profile language used as the canonical reference when scoring (en/es/fr).
+profile_language: en
+
+# Offers with score >= threshold are flagged as `recommended` and shown by
+# default in the web UI. Everything is still stored regardless of score.
+score_threshold: 60
+
+# Fetching: how long to wait for a page (seconds) before giving up.
+fetch_timeout: 30
+
+# Web UI server.
+web:
+  host: 127.0.0.1
+  port: 8000
+
+# Configured career/search-page sources (Phase 2.1). Each entry is an HTTP URL
+# with its query params already set so the page lists only relevant offers.
+sources: []
+
+# Email-alert ingestion (Phase 2.2). Disabled until implemented.
+email:
+  enabled: false

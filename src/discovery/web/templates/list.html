@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="ingest">
+  <form hx-post="/ingest" hx-target="#flash" hx-swap="innerHTML"
+        hx-indicator="#ingest-loader"
+        hx-on::after-request="if(event.detail.successful) this.reset()">
+    <input type="url" name="url" placeholder="Paste a public job-offer URL…" required>
+    <button type="submit" class="btn">Add offer</button>
+    <span id="ingest-loader" class="htmx-indicator ingest-loader">
+      <span class="spinner"></span> Fetching and analyzing with AI…
+    </span>
+  </form>
+</section>
+
+<section class="filters">
+  <form method="get" action="/">
+    <label>Status:
+      <select name="status" onchange="this.form.submit()">
+        <option value="" {% if not status %}selected{% endif %}>All (active)</option>
+        {% for s in statuses %}
+        <option value="{{ s }}" {% if status == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="check">
+      <input type="checkbox" name="recommended" value="1"
+             {% if recommended_only %}checked{% endif %} onchange="this.form.submit()">
+      Recommended only
+    </label>
+    <label>Sort:
+      <select name="sort" onchange="this.form.submit()">
+        <option value="score" {% if sort == 'score' %}selected{% endif %}>Score</option>
+        <option value="date" {% if sort == 'date' %}selected{% endif %}>Date</option>
+      </select>
+    </label>
+  </form>
+  <div class="summary">
+    {% for st, n in counts.items() %}<span class="pill">{{ st }}: {{ n }}</span>{% endfor %}
+  </div>
+</section>
+
+<table class="offers">
+  <thead>
+    <tr>
+      <th>Score</th><th>Title</th><th>Company</th><th>Location</th>
+      <th>Contract</th><th>Status</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for offer in offers %}
+      {% include "_row.html" %}
+    {% else %}
+      <tr><td colspan="7" class="empty">No offers yet. Paste a job URL above or run a search.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+<tr id="offer-{{ offer.id }}" class="{{ 'recommended' if offer.recommended else '' }}">
+  <td class="score">
+    <span class="score-badge score-{{ 'high' if offer.score and offer.score >= 70 else 'mid' if offer.score and offer.score >= 50 else 'low' }}">
+      {{ offer.score if offer.score is not none else '–' }}
+    </span>
+  </td>
+  <td><a href="/offer/{{ offer.id }}">{{ offer.title or '(untitled)' }}</a></td>
+  <td>{{ offer.company or '—' }}</td>
+  <td>{{ offer.location or '—' }}{% if offer.work_mode %} · {{ offer.work_mode }}{% endif %}</td>
+  <td>{{ offer.contract_type or '—' }}</td>
+  <td><span class="status status-{{ offer.status }}">{{ offer.status }}</span></td>
+  <td class="actions">
+    <button class="btn-sm" title="Mark applying"
+            hx-post="/offer/{{ offer.id }}/status?value=applying"
+            hx-target="#offer-{{ offer.id }}" hx-swap="outerHTML">📝</button>
+    <button class="btn-sm" title="Mark reviewed"
+            hx-post="/offer/{{ offer.id }}/status?value=reviewed"
+            hx-target="#offer-{{ offer.id }}" hx-swap="outerHTML">👁</button>
+    <a class="btn-sm" href="{{ offer.source_url }}" target="_blank" title="Open original">↗</a>
+    <button class="btn-sm danger" title="Delete"
+            hx-post="/offer/{{ offer.id }}/delete"
+            hx-target="#offer-{{ offer.id }}" hx-swap="outerHTML"
+            hx-confirm="Delete this offer?">🗑</button>
+  </td>
+</tr>
