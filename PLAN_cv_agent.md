@@ -159,6 +159,43 @@ Esto reemplaza el enfoque de base64 en cv_gen.py y centraliza todo acceso web de
 
 ---
 
+## Mejoras pendientes al System Prompt (prompts.py)
+
+Identificadas durante el test end-to-end del 2026-06-14:
+
+### 1. Umbral para actualizar la sección "summary" / resumen profesional
+El agente no debe modificar el resumen profesional por cada avance puntual o tarea nueva.
+Solo debe actualizarlo cuando el cambio representa una evolución real del perfil profesional
+(nueva tecnología dominada, nuevo rol, cambio de área). En el test agregó ROS2 al resumen
+de forma forzada cuando debería haberlo puesto solo en experiencia y skills.
+
+**Regla a agregar:** "Only update the `summary` section when the change represents a
+significant shift in the professional profile (new domain, new level of expertise, career
+pivot). Weekly tasks or minor additions go into `experience` or `skills` only."
+
+### 2. Selección de contenido relevante y actualizado para el CV
+Los perfiles completos contienen toda la historia profesional, pero el CV generado debe
+priorizar lo más relevante y reciente. Experiencias muy antiguas o de bajo impacto
+(ej. monitor universitario 2010-2012) pueden omitirse o condensarse dependiendo de
+la oferta de trabajo.
+
+**Regla a agregar:** "When generating a CV, select the most relevant and recent content.
+Older or lower-impact experiences (e.g. academic tutoring from 15 years ago) may be
+omitted or condensed if they don't add value for the specific job offer. The profile
+.md files are the source of truth — the CV is a curated selection, not a full dump."
+
+### 3. Honestidad estricta — el perfil es la única fuente de verdad
+El CV generado debe corresponder exactamente a la realidad del perfil. No se deben
+exagerar niveles de experiencia, inventar responsabilidades, ni presentar conocimientos
+exploratorios como dominio consolidado.
+
+**Regla a agregar (refuerzo):** "NEVER exaggerate experience levels, invent
+responsibilities, or present exploratory knowledge as consolidated expertise.
+If a skill is mentioned as 'studied' or 'explored' in the profile, describe it
+the same way in the CV. The profile .md files are the single source of truth."
+
+---
+
 ## Verificación Final
 
 - `python -m agent` → el agente saluda y hace preguntas proactivas
