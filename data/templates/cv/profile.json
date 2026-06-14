@@ -1,0 +1,98 @@
+{
+  "_comment": "EDIT THIS FILE TO UPDATE THE CV. The design (CV Template.dc.html) reads everything from here — you never need to touch layout or styles. Keep the field names; add/remove array items freely. 'pct' (0-100) sets the bar length for skills/languages. interest 'icon' must be one of: camera, piano, chess, dumbbell.",
+
+  "name": "Miguel Esteban Ramos Montilla",
+  "title": "Electronics Engineer",
+  "subtitle": "MSc Computer Science · MSc Embedded Systems (ongoing)",
+  "photo": "uploads/MIGUEL_FONDO_BLANCO_1.jpg",
+
+  "phone": "+33 7 75 70 04 69",
+  "location": "Toulouse, France",
+  "email": "miguel9ramos@gmail.com",
+  "linkedin": "linkedin.com/in/miguel-montilla",
+  "github": "github.com/mikemontilla",
+
+  "summary": "Electronics engineer with 10+ years spanning software development, automation and tech entrepreneurship. Two international master’s degrees — Computer Science (UFMG, Brazil) and Embedded Systems & Microsystems (University of Toulouse, ongoing) — on a solid electronics foundation. Broad hands-on experience across web & backend development, automation, computer vision and embedded systems. A fast learner passionate about digital system architecture, robotics and AI, skilled at explaining complex technical ideas clearly.",
+
+  "skills": [
+    { "name": "Python", "level": "Advanced", "pct": 92 },
+    { "name": "JavaScript / Next.js", "level": "Intermediate+", "pct": 78 },
+    { "name": "PHP", "level": "Intermediate", "pct": 62 },
+    { "name": "SQL", "level": "Basic+", "pct": 45 }
+  ],
+
+  "tools": ["GStreamer", "OpenCV", "REST APIs", "Next.js", "scikit-learn", "Docker", "Linux", "Git", "GitHub", "V4L2", "RTSP", "Cron"],
+
+  "languages": [
+    { "name": "Spanish", "level": "Native", "pct": 100 },
+    { "name": "French", "level": "B2 · DELF", "pct": 70 },
+    { "name": "English", "level": "B2", "pct": 70 },
+    { "name": "Portuguese", "level": "Upper-int.", "pct": 78 }
+  ],
+
+  "interests": [
+    { "label": "Photography", "icon": "camera" },
+    { "label": "Piano", "icon": "piano" },
+    { "label": "Chess", "icon": "chess" },
+    { "label": "CrossFit", "icon": "dumbbell" }
+  ],
+
+  "experience": [
+    {
+      "role": "R&D Intern",
+      "company": "Tachyssema",
+      "place": "Toulouse, France",
+      "dates": "Mar – Aug 2026",
+      "note": "Master’s thesis — Product: Xplocam, a real-time thermal/visible image-fusion camera",
+      "bullets": [
+        "Studied GStreamer video pipelines (elements, pads) for live stream processing.",
+        "Built an interactive CLI to drive the camera: live thermal/visible view, recording, RTSP server, and keyboard control of fusion threshold, transparency, mode and thermal color profiles.",
+        "Designed & implemented the Xplocam REST API: camera detection/status, mode selection (HD/4K/VGA) with frame rate, stream & RTSP control, client count, and recorded-video listing.",
+        "Explored OpenCV for processing: image transforms, color-space conversion, filtering and edge detection (Sobel, Laplacian, Canny)."
+      ],
+      "stack": ["Python", "GStreamer", "OpenCV", "REST", "Docker", "V4L2"]
+    },
+    {
+      "role": "Co-founder & Lead Developer",
+      "company": "Clabki",
+      "place": "Latin America · clabki.com",
+      "dates": "2017 – 2026",
+      "note": "9-year venture recovering lost pets across Latin America via geo-targeted social ads",
+      "bullets": [
+        "Built the client-acquisition engine: an automated job running every 2h that scraped Facebook groups for lost-pet posts, classified them with an ML model, extracted phone numbers via country-specific regex, and auto-sent personalized ad messages.",
+        "Ran the server infrastructure with scheduled cron jobs; built multiple websites and internal management platforms.",
+        "Freelance in parallel: custom websites and web-scraping projects delivering structured data to clients."
+      ],
+      "stack": ["Python", "ML", "Web Scraping", "PHP", "JavaScript", "Docker", "Linux", "SQL"]
+    },
+    {
+      "role": "Innovation Engineer",
+      "company": "EDCCOM (36PT)",
+      "place": "Colombia",
+      "dates": "2012 – 2014",
+      "note": "Graphic design & communication agency",
+      "bullets": [
+        "Built the agency’s first websites and web apps; prototyped an NFC physical-interaction system for real-time “physical likes”.",
+        "Developed a full-stack brand-diagnosis platform: company surveys, statistical analysis, and personalized brand-development plans."
+      ],
+      "stack": ["PHP", "JavaScript", "HTML/CSS", "NFC"]
+    }
+  ],
+
+  "education": [
+    { "degree": "MSc Embedded Systems & Microsystems", "school": "University of Toulouse", "place": "France", "dates": "2025 – 2026", "note": "Ongoing · 2nd year (M2)" },
+    { "degree": "MSc Computer Science", "school": "UFMG", "place": "Belo Horizonte, Brazil", "dates": "2014 – 2016", "note": "Software engineering · Thesis: AngularJS performance, survey of 460+ developers" },
+    { "degree": "BEng Electronics Engineering", "school": "Pontificia Universidad Javeriana", "place": "Bogotá, Colombia", "dates": "2006 – 2012", "note": "Academic monitor in Digital Circuits & Electronic Devices labs" }
+  ],
+
+  "publications": [
+    { "title": "AngularJS Performance: A Survey Study", "meta": "M. Ramos, M.T. Valente, R. Terra — IEEE IX Latin American, 2017" },
+    { "title": "AngularJS in the wild: a survey with 460 developers", "meta": "PLATEAU 2016 — 7th Intl. Workshop on Evaluation & Usability of PLs and Tools" },
+    { "title": "Active Tracking Position Antenna Base: Low-Cost Approximation with Servo Gimbals", "meta": "IEEE IX LARC — Robotics Symposium, 2011" }
+  ],
+
+  "references": [
+    { "name": "Laura Ramos", "role": "Power Electronics Engineer, Serma Ingénierie", "phone": "+34 6 37 12 55 04" },
+    { "name": "Johan Castiblanco", "role": "Consulting Engineer — Airbus Operations, SII", "phone": "+33 7 58 19 24 50" }
+  ]
+}

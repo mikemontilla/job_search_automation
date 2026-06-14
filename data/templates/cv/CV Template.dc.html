@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:#e7e9ec;-webkit-font-smoothing:antialiased}
+    @page{size:legal portrait;margin:0}
+    ul{list-style:disc}
+    @media print{
+      body{background:#fff}
+      .screen-pad{padding:0 !important;min-height:0 !important}
+      .page{box-shadow:none !important;border-radius:0 !important}
+    }
+  </style>
+</helmet>
+
+<div class="screen-pad" style="min-height:100vh;padding:40px;display:flex;justify-content:center;font-family:'IBM Plex Sans',sans-serif;background:#e7e9ec">
+  <div class="page" data-screen-label="CV — Miguel Ramos" style="width:816px;min-height:1344px;background:#fff;display:flex;box-shadow:0 14px 44px rgba(20,30,50,.16);border-radius:3px;overflow:hidden">
+
+    <main style="flex:1;padding:38px 38px 38px 40px;display:flex;flex-direction:column;gap:19px">
+      <div>
+        <h1 style="margin:0;font:600 34px/1.04 'IBM Plex Sans';color:#1a1f26;letter-spacing:-.9px">{{ name }}</h1>
+        <div style="width:48px;height:3px;background:#1f3a5f;margin:12px 0 10px"></div>
+        <div style="font:500 13px/1.3 'IBM Plex Mono',monospace;color:#1f3a5f">{{ title }}</div>
+        <div style="margin-top:3px;font:400 11px/1.3 'IBM Plex Sans';color:#6b7480">{{ subtitle }}</div>
+      </div>
+
+      <div>
+        <div style="margin-bottom:9px;border-bottom:1px solid #d9dde2;padding-bottom:5px"><span style="font:600 11px 'IBM Plex Mono',monospace;letter-spacing:2.5px;color:#1f3a5f;text-transform:uppercase">Profile</span></div>
+        <p style="margin:0;font:400 10.5px/1.6 'IBM Plex Sans';color:#3a4350;text-wrap:pretty">{{ summary }}</p>
+      </div>
+
+      <div>
+        <div style="margin-bottom:11px;border-bottom:1px solid #d9dde2;padding-bottom:5px"><span style="font:600 11px 'IBM Plex Mono',monospace;letter-spacing:2.5px;color:#1f3a5f;text-transform:uppercase">Experience</span></div>
+        <div style="display:flex;flex-direction:column;gap:15px">
+          <sc-for list="{{ experience }}" as="exp" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+                <div style="font:600 12.5px/1.2 'IBM Plex Sans';color:#1a1f26">{{ exp.role }}</div>
+                <div style="font:500 9.5px/1.2 'IBM Plex Mono',monospace;color:#8a93a0;white-space:nowrap">{{ exp.dates }}</div>
+              </div>
+              <div style="font:500 11px/1.25 'IBM Plex Sans';color:#1f3a5f">{{ exp.company }} <span style="color:#9aa2ad;font-weight:400">· {{ exp.place }}</span></div>
+              <div style="font:400 10px/1.35 'IBM Plex Sans';font-style:italic;color:#6b7480;margin-top:1px">{{ exp.note }}</div>
+              <ul style="margin:6px 0 0;padding-left:15px;display:flex;flex-direction:column;gap:3px;color:#1f3a5f">
+                <sc-for list="{{ exp.bullets }}" as="b" hint-placeholder-count="3"><li style="font:400 10px/1.45 'IBM Plex Sans';color:#3a4350">{{ b }}</li></sc-for>
+              </ul>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">
+                <sc-for list="{{ exp.stack }}" as="s" hint-placeholder-count="5"><span style="font:500 9px/1.4 'IBM Plex Mono',monospace;color:#1f3a5f;border:1px solid #d4dae1;background:#f5f7f9;padding:1.5px 6px;border-radius:3px">{{ s }}</span></sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div>
+        <div style="margin-bottom:11px;border-bottom:1px solid #d9dde2;padding-bottom:5px"><span style="font:600 11px 'IBM Plex Mono',monospace;letter-spacing:2.5px;color:#1f3a5f;text-transform:uppercase">Education</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ education }}" as="ed" hint-placeholder-count="3">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+                <div style="font:600 11.5px/1.2 'IBM Plex Sans';color:#1a1f26">{{ ed.degree }}</div>
+                <div style="font:500 9.5px/1.2 'IBM Plex Mono',monospace;color:#8a93a0;white-space:nowrap">{{ ed.dates }}</div>
+              </div>
+              <div style="font:500 10.5px/1.25 'IBM Plex Sans';color:#1f3a5f">{{ ed.school }} <span style="color:#9aa2ad;font-weight:400">· {{ ed.place }}</span></div>
+              <div style="font:400 9.5px/1.35 'IBM Plex Sans';color:#6b7480;margin-top:1px">{{ ed.note }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div>
+        <div style="margin-bottom:11px;border-bottom:1px solid #d9dde2;padding-bottom:5px"><span style="font:600 11px 'IBM Plex Mono',monospace;letter-spacing:2.5px;color:#1f3a5f;text-transform:uppercase">Publications</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ publications }}" as="pub" hint-placeholder-count="3">
+            <div>
+              <div style="font:500 10px/1.3 'IBM Plex Sans';color:#1a1f26">{{ pub.title }}</div>
+              <div style="font:400 9px/1.3 'IBM Plex Mono',monospace;color:#8a93a0;margin-top:1px">{{ pub.meta }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </main>
+
+    <aside style="width:266px;flex-shrink:0;background:#1f3a5f;color:#eaf0f7;padding:28px 24px 24px;display:flex;flex-direction:column;gap:15px">
+      <div style="display:flex;justify-content:center">
+        <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="cv3-photo" shape="rounded" radius="6" src="uploads/MIGUEL_FONDO_BLANCO_1.jpg" placeholder="Drop photo" hint-size="150px,150px" style="display:block;width:150px;height:150px"></x-import>
+      </div>
+
+      <div>
+        <div style="font:600 10px/1 'IBM Plex Mono',monospace;letter-spacing:2px;color:#9db4cf;text-transform:uppercase;margin-bottom:11px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.16)">Contact</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:9px;font:400 10px/1.3 'IBM Plex Sans';color:#dbe6f2"><span style="color:#9db4cf;flex-shrink:0;display:flex"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"></path></svg></span><span>{{ phone }}</span></div>
+          <div style="display:flex;align-items:center;gap:9px;font:400 10px/1.3 'IBM Plex Sans';color:#dbe6f2"><span style="color:#9db4cf;flex-shrink:0;display:flex"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></span><span>{{ email }}</span></div>
+          <div style="display:flex;align-items:center;gap:9px;font:400 10px/1.3 'IBM Plex Sans';color:#dbe6f2"><span style="color:#9db4cf;flex-shrink:0;display:flex"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg></span><span>{{ location }}</span></div>
+          <div style="display:flex;align-items:center;gap:9px;font:400 10px/1.3 'IBM Plex Sans';color:#dbe6f2"><span style="color:#9db4cf;flex-shrink:0;display:flex"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 0 1 4 0v4"></path></svg></span><span>{{ linkedin }}</span></div>
+          <div style="display:flex;align-items:center;gap:9px;font:400 10px/1.3 'IBM Plex Sans';color:#dbe6f2"><span style="color:#9db4cf;flex-shrink:0;display:flex"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-4 1.4-4-2.2-6-2.7m12 5.2v-3.3c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.6 11.6 0 0 0-6.2 0C6.1 1.6 5.1 1.9 5.1 1.9a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 3.6 8.3c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2v3.4"></path></svg></span><span>{{ github }}</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font:600 10px/1 'IBM Plex Mono',monospace;letter-spacing:2px;color:#9db4cf;text-transform:uppercase;margin-bottom:13px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.16)">Skills</div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ coreLangs }}" as="lang" hint-placeholder-count="4">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;font:500 10px/1.2 'IBM Plex Sans';color:#eaf0f7;margin-bottom:4px"><span>{{ lang.name }}</span><span style="font:400 8.5px 'IBM Plex Mono',monospace;color:#9db4cf">{{ lang.level }}</span></div>
+              <div style="height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden">{{ lang.bar }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font:600 9px/1 'IBM Plex Mono',monospace;letter-spacing:1px;color:#9db4cf;text-transform:uppercase;margin:12px 0 6px">Frameworks &amp; Tools</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          <sc-for list="{{ tools }}" as="t" hint-placeholder-count="8"><span style="font:500 8.5px/1.5 'IBM Plex Mono',monospace;color:#dbe6f2;border:1px solid rgba(255,255,255,.22);padding:1.5px 6px;border-radius:3px">{{ t }}</span></sc-for>
+        </div>
+      </div>
+
+      <div>
+        <div style="font:600 10px/1 'IBM Plex Mono',monospace;letter-spacing:2px;color:#9db4cf;text-transform:uppercase;margin-bottom:13px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.16)">Languages</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ languages }}" as="lng" hint-placeholder-count="4">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;font:500 10px/1.2 'IBM Plex Sans';color:#eaf0f7;margin-bottom:4px"><span>{{ lng.name }}</span><span style="font:400 8.5px 'IBM Plex Mono',monospace;color:#9db4cf">{{ lng.level }}</span></div>
+              <div style="height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden">{{ lng.bar }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div>
+        <div style="font:600 10px/1 'IBM Plex Mono',monospace;letter-spacing:2px;color:#9db4cf;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.16)">Interests</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ interestItems }}" as="it" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:10px;font:400 10.5px/1.2 'IBM Plex Sans';color:#dbe6f2"><span style="color:#9db4cf;flex-shrink:0;display:flex">{{ it.icon }}</span><span>{{ it.label }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div>
+        <div style="font:600 10px/1 'IBM Plex Mono',monospace;letter-spacing:2px;color:#9db4cf;text-transform:uppercase;margin-bottom:11px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.16)">References</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ references }}" as="ref" hint-placeholder-count="2">
+            <div>
+              <div style="font:600 10.5px/1.25 'IBM Plex Sans';color:#eaf0f7">{{ ref.name }}</div>
+              <div style="font:400 9px/1.35 'IBM Plex Sans';color:#cdd9e6;margin-top:1px">{{ ref.role }}</div>
+              <div style="font:400 8.5px/1.3 'IBM Plex Mono',monospace;color:#9db4cf;margin-top:2px">{{ ref.phone }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+// ─────────────────────────────────────────────────────────────────────────
+//  This file is the DESIGN. All CV CONTENT lives in profile.json.
+//  To update the résumé, edit profile.json — you never need to touch this.
+// ─────────────────────────────────────────────────────────────────────────
+class Component extends DCLogic {
+  state = { p: null };
+
+  componentDidMount() {
+    // Load the profile data. Edit profile.json to update the CV.
+    fetch('./profile.json')
+      .then((r) => r.json())
+      .then((p) => {
+        this.setState({ p: p });
+        if (p && p.photo) {
+          document.querySelectorAll('image-slot').forEach((el) => el.setAttribute('src', p.photo));
+        }
+      })
+      .catch((err) => console.error('Could not load profile.json —', err));
+
+    // <image-slot> mounts asynchronously; keep it square and seed a photo.
+    let tries = 0;
+    const apply = () => {
+      document.querySelectorAll('image-slot').forEach((el) => {
+        if (!el.getAttribute('src')) el.setAttribute('src', 'uploads/MIGUEL_FONDO_BLANCO_1.jpg');
+        el.style.width = '150px';
+        el.style.height = '150px';
+      });
+      if (++tries > 60) clearInterval(this._iv);
+    };
+    this._iv = setInterval(apply, 120);
+    apply();
+  }
+
+  componentWillUnmount() { clearInterval(this._iv); }
+
+  renderVals() {
+    const p = this.state.p;
+    if (!p) return { name: '', title: '', subtitle: '', phone: '', location: '', email: '', linkedin: '', github: '', summary: '', tools: [], coreLangs: [], languages: [], interestItems: [], experience: [], education: [], publications: [], references: [] };
+
+    // Presentation helpers — turn plain data into the small visual pieces.
+    const meter = (pct) => React.createElement('div', { style: { height: '100%', width: (pct || 0) + '%', background: '#7fa8d4', borderRadius: '2px' } });
+    const svg = (kids) => React.createElement('svg', { width: 15, height: 15, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' }, kids);
+    const Pa = (d) => React.createElement('path', { d: d, key: d });
+    const Ci = (cx, cy, r) => React.createElement('circle', { cx: cx, cy: cy, r: r, key: 'c' + cx + '-' + cy });
+    const ICONS = {
+      camera: () => svg([Pa('M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z'), Ci(12, 13, 3.2)]),
+      piano: () => svg([Pa('M9 18V5l12-2v13'), Ci(6, 18, 3), Ci(18, 16, 3)]),
+      chess: () => svg([Pa('m3 5 3.2 10.5h11.6L22 5l-5.5 5.5L12 3.5 7.5 10.5 3 5Z'), Pa('M5.5 20h13')]),
+      dumbbell: () => svg([Pa('m6.5 6.5 11 11'), Pa('m21 21-1-1'), Pa('m3 3 1 1'), Pa('m18 22 4-4'), Pa('m2 6 4-4'), Pa('m3 10 7-7'), Pa('m14 21 7-7')]),
+    };
+
+    const coreLangs = (p.skills || []).map((s) => Object.assign({}, s, { bar: meter(s.pct) }));
+    const languages = (p.languages || []).map((s) => Object.assign({}, s, { bar: meter(s.pct) }));
+    const interestItems = (p.interests || []).map((it) => ({ label: it.label, icon: (ICONS[it.icon] || ICONS.camera)() }));
+
+    return {
+      name: p.name,
+      title: p.title,
+      subtitle: p.subtitle,
+      phone: p.phone,
+      location: p.location,
+      email: p.email,
+      linkedin: p.linkedin,
+      github: p.github,
+      summary: p.summary,
+      tools: p.tools || [],
+      coreLangs: coreLangs,
+      languages: languages,
+      interestItems: interestItems,
+      experience: p.experience || [],
+      education: p.education || [],
+      publications: p.publications || [],
+      references: p.references || [],
+    };
+  }
+}
+</script>
+</body>
+</html>
