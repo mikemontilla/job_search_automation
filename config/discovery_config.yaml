@@ -39,6 +39,23 @@ web:
 #   - name: "NXP — Internships (Toulouse)"
 #     url: "https://nxp.wd3.myworkdayjobs.com/fr-FR/careers?locations=98d67abaaa8a100fa633b715bb949297&q=embedded"
 #     link_selector: "a[data-automation-id='jobTitle']"
+#
+# A `type: wp_ajax` entry instead targets a WordPress admin-ajax.php JSON
+# endpoint directly (no Playwright, server-side filtering — used by sites
+# whose listing page filters via JS without changing the URL, e.g. those
+# built on Zoho Recruit):
+# sources:
+#   - name: "Serma — Embarqué (FR)"
+#     type: wp_ajax
+#     ajax_url: "https://www.serma.com/wp-admin/admin-ajax.php"
+#     payload:
+#       action: fetch_posts
+#       keyword: "embarqué"
+#       commune: ""
+#       company: ""
+#       contract_type: ""
+#       limit: 100
+#     detail_url_template: "https://www.serma.com/carrieres/offres-emploi/{id}"
 sources:
   - name: "Siemens — Filtered search (FR)"
     url: "https://jobs.siemens.com/fr_FR/externaljobs/SearchJobs/?42386=%5B812134%5D&42386_format=17546&42389=%5B102117%2C102127%5D&42389_format=17549&listFilterMode=1&folderRecordsPerPage=6&"
@@ -46,6 +63,28 @@ sources:
   - name: "NXP — Internships (Toulouse)"
     url: "https://nxp.wd3.myworkdayjobs.com/fr-FR/careers?locations=98d67abaaa8a100fa633b715bb949297&q=embedded"
     link_selector: "a[data-automation-id='jobTitle']"
+  - name: "Serma — Embarqué (FR)"
+    type: wp_ajax
+    ajax_url: "https://www.serma.com/wp-admin/admin-ajax.php"
+    payload:
+      action: fetch_posts
+      keyword: "embarqué"
+      commune: ""
+      company: ""
+      contract_type: ""
+      limit: 100
+    detail_url_template: "https://www.serma.com/carrieres/offres-emploi/{id}"
+  - name: "Serma — Traitement d'image (FR)"
+    type: wp_ajax
+    ajax_url: "https://www.serma.com/wp-admin/admin-ajax.php"
+    payload:
+      action: fetch_posts
+      keyword: "image"
+      commune: ""
+      company: ""
+      contract_type: ""
+      limit: 100
+    detail_url_template: "https://www.serma.com/carrieres/offres-emploi/{id}"
 
 # Email-alert ingestion (Phase 2.2). Disabled until implemented.
 email:

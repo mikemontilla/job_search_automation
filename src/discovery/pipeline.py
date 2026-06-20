@@ -8,6 +8,7 @@ from src.discovery.scoring import analyze_offer
 from src.discovery.sources.base import RawOffer, Source
 from src.discovery.sources.career_page import CareerPageSource
 from src.discovery.sources.manual import ManualSource
+from src.discovery.sources.wp_ajax import WpAjaxJsonSource
 
 logger = logging.getLogger("discovery")
 
@@ -63,7 +64,7 @@ def ingest_url(url: str) -> dict:
 
 
 def run() -> dict:
-    """Run every configured source (career pages today; email alerts in Phase 2.2)."""
+    """Run every configured source (career pages, wp_ajax; email alerts in Phase 2.2)."""
     store.init_schema()
     total = {"added": 0, "skipped": 0, "error": 0}
     sources = _configured_sources()
@@ -79,12 +80,30 @@ def run() -> dict:
 def _configured_sources() -> list[Source]:
     sources: list[Source] = []
     for entry in SOURCES:
-        if not isinstance(entry, dict) or not entry.get("url"):
+        if not isinstance(entry, dict):
             logger.warning("Skipping malformed source entry: %r", entry)
             continue
-        sources.append(CareerPageSource(
-            name=entry.get("name", entry["url"]),
-            url=entry["url"],
-            link_selector=entry.get("link_selector"),
-        ))
+        kind = entry.get("type", "career_page")
+        if kind == "wp_ajax":
+            if not entry.get("ajax_url") or not entry.get("detail_url_template"):
+                logger.warning("Skipping malformed wp_ajax source entry: %r", entry)
+                continue
+            sources.append(WpAjaxJsonSource(
+                name=entry.get("name", entry["ajax_url"]),
+                ajax_url=entry["ajax_url"],
+                payload=entry.get("payload", {}),
+                detail_url_template=entry["detail_url_template"],
+                id_field=entry.get("id_field", "id"),
+            ))
+        elif kind == "career_page":
+            if not entry.get("url"):
+                logger.warning("Skipping malformed source entry: %r", entry)
+                continue
+            sources.append(CareerPageSource(
+                name=entry.get("name", entry["url"]),
+                url=entry["url"],
+                link_selector=entry.get("link_selector"),
+            ))
+        else:
+            logger.warning("Unknown source type %r in entry: %r", kind, entry)
     return sources
