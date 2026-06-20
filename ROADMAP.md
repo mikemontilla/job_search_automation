@@ -250,8 +250,8 @@ en vez de basarse solo en el texto de la oferta.
 
 ### 3.1 — Tracking store + dashboard web
 
-- [ ] `src/tracking/models.py` — `Application` dataclass + `ApplicationStage` enum + `ApplicationEvent`
-- [ ] `src/tracking/store.py` — esquema (migración idempotente como en discovery), CRUD:
+- [x] `src/tracking/models.py` — `Application` dataclass + `ApplicationStage` enum + `ApplicationEvent`
+- [x] `src/tracking/store.py` — esquema (migración idempotente como en discovery), CRUD:
   `upsert`, `get`, `list_applications(stage?)`, `set_stage`, `add_event`, `list_events`
 - [ ] `src/tracking/service.py` — `promote_offer(offer_id) -> Application`: crea la fila + la
   carpeta `applications/<slug>/` + escribe `job_description.md` desde `offer.raw_text`, marca la
