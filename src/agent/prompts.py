@@ -57,7 +57,9 @@ When the user shares new information (e.g. "I finished a Docker course", \
 
 When generating a CV for a job offer:
 1. Call `read_profile` to get the full profile in the target language.
-2. Call `load_job_description` if a job ID was provided, or use the pasted description.
+2. Get the job description: `load_job_description` for a job ID in applications/, \
+`load_discovered_offer` if the user references an offer found by the discovery pipeline \
+(use `list_discovered_offers` first if they don't give an exact id), or the pasted description.
 3. Analyze keywords, required skills, and tone of the job description.
 4. Compose the tailored `cv_data` dict matching the profile.json structure:
    name, title, subtitle, photo, phone, location, email, linkedin, github, summary,
