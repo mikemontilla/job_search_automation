@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — Job Discovery{% endblock %}
+{% block content %}
+
+<a href="/applications/{{ app_id }}" class="back">← Back to application</a>
+
+<article class="detail markdown-doc">
+  {{ html | safe }}
+</article>
+
+{% endblock %}

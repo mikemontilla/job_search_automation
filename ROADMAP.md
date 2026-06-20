@@ -256,16 +256,16 @@ en vez de basarse solo en el texto de la oferta.
 - [x] `src/tracking/service.py` — `promote_offer(offer_id) -> Application`: crea la fila + la
   carpeta `applications/<slug>/` + escribe `job_description.md` desde `offer.raw_text`, marca la
   oferta como `applying`, y registra el evento inicial. Genera el slug desde company+title.
-- [ ] Rutas FastAPI nuevas en `src/discovery/web/app.py` (mismo servidor):
+- [x] Rutas FastAPI nuevas en `src/discovery/web/app.py` (mismo servidor):
   - `GET /applications` — dashboard: tabla/columnas por `stage`, filtros, próxima acción
   - `GET /applications/{id}` — detalle: metadata editable, timeline, links a CVs y a `prep/*.md`
   - `POST /applications` — crear (promover desde oferta, o manual)
   - `POST /applications/{id}/stage` — cambiar etapa (registra `stage_change` event)
   - `POST /applications/{id}/event` — agregar nota / evento de entrevista
   - servir/visualizar archivos de la carpeta (CV, prep docs) renderizando markdown
-- [ ] Botón **"Promote to application"** en `detail.html` de la oferta de discovery
-- [ ] Templates: `applications.html`, `application_detail.html`, reutilizando el CSS existente
-- [ ] Nav entre las dos vistas (Discovery ↔ Applications) en `base.html`
+- [x] Botón **"Promote to application"** en `detail.html` de la oferta de discovery
+- [x] Templates: `applications.html`, `application_detail.html`, reutilizando el CSS existente
+- [x] Nav entre las dos vistas (Discovery ↔ Applications) en `base.html`
 
 ### 3.2 — Preparación de entrevistas y estrategia (agente)
 

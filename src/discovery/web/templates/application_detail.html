@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}{{ application.title or 'Application' }} — Job Discovery{% endblock %}
+{% block content %}
+
+<a href="/applications" class="back">← Back to applications</a>
+
+<article class="detail">
+  <header class="detail-head">
+    <div>
+      <h1>{{ application.title or '(untitled)' }}</h1>
+      <p class="sub">{{ application.company or '—' }}{% if application.location %} · {{ application.location }}{% endif %}</p>
+    </div>
+    <form hx-post="/applications/{{ application.id }}/stage" hx-target="#flash" hx-swap="innerHTML">
+      <select name="value" onchange="this.form.requestSubmit()">
+        {% for s in stages %}
+        <option value="{{ s }}" {% if application.stage == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </header>
+
+  <div class="meta-grid">
+    <div><strong>Applied date</strong>{{ application.applied_date or '—' }}</div>
+    <div><strong>Next action</strong>{{ application.next_action or '—' }}</div>
+    <div><strong>Next action date</strong>{{ application.next_action_date or '—' }}</div>
+    <div><strong>HR contact</strong>{{ application.hr_contact or '—' }}</div>
+    <div><strong>CV languages</strong>{{ application.cv_languages | join(', ') if application.cv_languages else '—' }}</div>
+    <div><strong>Source</strong>{% if application.source_url %}<a href="{{ application.source_url }}" target="_blank">original ↗</a>{% else %}—{% endif %}</div>
+  </div>
+
+  {% if application.notes %}<section><h2>Notes</h2><p>{{ application.notes }}</p></section>{% endif %}
+
+  {% if job_description %}
+  <section>
+    <h2>Job description</h2>
+    <pre class="job-description">{{ job_description }}</pre>
+  </section>
+  {% endif %}
+
+  <section>
+    <h2>Documents</h2>
+    <div class="doc-lists">
+      <div>
+        <h3>CVs</h3>
+        <ul class="file-list">
+          {% for f in files.cvs %}<li><a href="/files/{{ application.id }}/{{ f }}" target="_blank">{{ f }}</a></li>{% else %}<li class="empty">None yet</li>{% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h3>Interview prep</h3>
+        <ul class="file-list">
+          {% for f in files.prep %}<li><a href="/applications/{{ application.id }}/doc/{{ f }}">{{ f }}</a></li>{% else %}<li class="empty">None yet</li>{% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h3>Research</h3>
+        <ul class="file-list">
+          {% for f in files.research %}<li><a href="/applications/{{ application.id }}/doc/{{ f }}">{{ f }}</a></li>{% else %}<li class="empty">None yet</li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <ul class="timeline">
+      {% for ev in events %}
+      <li>
+        <span class="ev-type ev-{{ ev.event_type }}">{{ ev.event_type.replace('_', ' ') }}</span>
+        <span class="ev-title">{{ ev.title or '' }}</span>
+        {% if ev.detail %}<p class="ev-detail">{{ ev.detail }}</p>{% endif %}
+        <span class="ev-date">{{ ev.event_date or ev.created_at }}</span>
+      </li>
+      {% else %}
+      <li class="empty">No events yet.</li>
+      {% endfor %}
+    </ul>
+
+    <form class="event-form" hx-post="/applications/{{ application.id }}/event" hx-target="#flash" hx-swap="innerHTML">
+      <select name="event_type" required>
+        {% for t in event_types %}<option value="{{ t }}">{{ t.replace('_', ' ') }}</option>{% endfor %}
+      </select>
+      <input type="text" name="title" placeholder="Title">
+      <input type="date" name="event_date">
+      <textarea name="detail" placeholder="Details (e.g. interviewer names/roles for interview_scheduled)"></textarea>
+      <button type="submit" class="btn">Add event</button>
+    </form>
+  </section>
+</article>
+
+{% endblock %}

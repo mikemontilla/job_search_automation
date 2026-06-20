@@ -83,6 +83,10 @@
 
   <footer class="detail-actions">
     <a class="btn" href="{{ offer.source_url }}" target="_blank">Open original ↗</a>
+    <form hx-post="/applications" hx-target="#flash" hx-swap="innerHTML" style="display: inline">
+      <input type="hidden" name="offer_id" value="{{ offer.id }}">
+      <button type="submit" class="btn">Promote to application</button>
+    </form>
     <button class="btn" hx-post="/offer/{{ offer.id }}/status?value=applying&redirect=1">Mark applying</button>
     <button class="btn danger" hx-post="/offer/{{ offer.id }}/delete?redirect=1"
             hx-confirm="Delete this offer?">Delete</button>

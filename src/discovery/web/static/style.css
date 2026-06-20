@@ -191,3 +191,45 @@ table.offers { width: 100%; border-collapse: collapse; background: var(--card);
   flex-shrink: 0; font-weight: 700;
   color: var(--red); margin-top: 0.05rem;
 }
+
+/* ── Nav / Applications ────────────────────────────────────── */
+.nav { display: flex; align-items: center; gap: 1.2rem; }
+.nav-link { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; }
+.nav-link:hover { color: #fff; }
+
+.stage-interested { background: #e0e7ff; color: #4338ca; }
+.stage-applied { background: #dbeafe; color: #1d4ed8; }
+.stage-screening { background: #fef3c7; color: var(--amber); }
+.stage-technical { background: #fde68a; color: #92400e; }
+.stage-final { background: #fed7aa; color: #c2410c; }
+.stage-offer { background: #dcfce7; color: var(--green); }
+.stage-accepted { background: #bbf7d0; color: var(--green); }
+.stage-rejected { background: var(--red-bg); color: var(--red); }
+.stage-withdrawn { background: #f3f4f6; color: var(--muted); }
+
+.detail-head select { padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid var(--line); }
+
+.doc-lists { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.file-list { list-style: none; margin: 0.4rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.file-list .empty { color: var(--muted); font-size: 0.85rem; }
+
+.job-description { white-space: pre-wrap; font-family: inherit; background: #fafbfc; border: 1px solid var(--line);
+  border-radius: 6px; padding: 0.8rem 1rem; font-size: 0.88rem; max-height: 320px; overflow-y: auto; }
+
+.timeline { list-style: none; margin: 0.6rem 0; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+.timeline li { border: 1px solid var(--line); border-radius: 6px; padding: 0.5rem 0.7rem; font-size: 0.88rem; }
+.ev-type { font-weight: 700; text-transform: uppercase; font-size: 0.72rem; color: var(--accent); margin-right: 0.4rem; }
+.ev-detail { margin: 0.3rem 0 0; color: #374151; white-space: pre-wrap; }
+.ev-date { color: var(--muted); font-size: 0.78rem; float: right; }
+
+.event-form { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+.event-form select, .event-form input[type=text], .event-form input[type=date] {
+  padding: 0.4rem 0.5rem; border: 1px solid var(--line); border-radius: 6px; font-size: 0.85rem;
+}
+.event-form textarea {
+  flex: 1 1 100%; min-height: 60px; padding: 0.5rem; border: 1px solid var(--line);
+  border-radius: 6px; font-size: 0.85rem; font-family: inherit;
+}
+
+.markdown-doc { line-height: 1.6; }
+.markdown-doc h1, .markdown-doc h2, .markdown-doc h3 { margin-top: 1.2rem; }

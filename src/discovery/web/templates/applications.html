@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Applications — Job Discovery{% endblock %}
+{% block content %}
+
+<section class="filters">
+  <form method="get" action="/applications">
+    <label>Stage:
+      <select name="stage" onchange="this.form.submit()">
+        <option value="" {% if not stage %}selected{% endif %}>All</option>
+        {% for s in stages %}
+        <option value="{{ s }}" {% if stage == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </form>
+</section>
+
+<table class="offers">
+  <thead>
+    <tr>
+      <th>Title</th><th>Company</th><th>Location</th><th>Stage</th>
+      <th>Next action</th><th>Updated</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for app in applications %}
+    <tr>
+      <td><a href="/applications/{{ app.id }}">{{ app.title or '(untitled)' }}</a></td>
+      <td>{{ app.company or '—' }}</td>
+      <td>{{ app.location or '—' }}</td>
+      <td><span class="status stage-{{ app.stage }}">{{ app.stage }}</span></td>
+      <td>{{ app.next_action or '—' }}{% if app.next_action_date %} ({{ app.next_action_date }}){% endif %}</td>
+      <td>{{ app.updated_at }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" class="empty">No applications yet. Promote a discovered offer to start tracking it.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
