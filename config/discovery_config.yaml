@@ -39,7 +39,13 @@ web:
 #   - name: "NXP — Internships (Toulouse)"
 #     url: "https://nxp.wd3.myworkdayjobs.com/fr-FR/careers?locations=98d67abaaa8a100fa633b715bb949297&q=embedded"
 #     link_selector: "a[data-automation-id='jobTitle']"
-sources: []
+sources:
+  - name: "Siemens — Filtered search (FR)"
+    url: "https://jobs.siemens.com/fr_FR/externaljobs/SearchJobs/?42386=%5B812134%5D&42386_format=17546&42389=%5B102117%2C102127%5D&42389_format=17549&listFilterMode=1&folderRecordsPerPage=6&"
+    link_selector: "a.link[href*='/JobDetail/']"
+  - name: "NXP — Internships (Toulouse)"
+    url: "https://nxp.wd3.myworkdayjobs.com/fr-FR/careers?locations=98d67abaaa8a100fa633b715bb949297&q=embedded"
+    link_selector: "a[data-automation-id='jobTitle']"
 
 # Email-alert ingestion (Phase 2.2). Disabled until implemented.
 email:
