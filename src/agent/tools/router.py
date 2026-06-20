@@ -21,6 +21,21 @@ def _save_session_note(note):
     return save_session_note(note)
 
 
+def _list_discovered_offers(status, recommended_only, limit):
+    from src.agent.tools.discovery import list_discovered_offers
+    return list_discovered_offers(status, recommended_only, limit)
+
+
+def _load_discovered_offer(offer_id):
+    from src.agent.tools.discovery import load_discovered_offer
+    return load_discovered_offer(offer_id)
+
+
+def _run_job_search():
+    from src.agent.tools.discovery import run_job_search
+    return run_job_search()
+
+
 TOOL_HANDLERS = {
     "read_profile": lambda args: read_profile(
         args["language"], args.get("section_key")
@@ -34,6 +49,11 @@ TOOL_HANDLERS = {
         args["language"], args["job_slug"], args["cv_data"]
     ),
     "save_session_note": lambda args: _save_session_note(args["note"]),
+    "list_discovered_offers": lambda args: _list_discovered_offers(
+        args.get("status"), args.get("recommended_only", False), args.get("limit", 20)
+    ),
+    "load_discovered_offer": lambda args: _load_discovered_offer(args["offer_id"]),
+    "run_job_search": lambda args: _run_job_search(),
 }
 
 

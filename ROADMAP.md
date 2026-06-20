@@ -148,14 +148,17 @@ páginas SPA pesadas (ej. Workday) necesitaban esperar a que la red se asentara
 - [x] Probado en vivo contra la cuenta real del usuario: 7 ofertas únicas extraídas de
   alertas de LinkedIn, fetch + scoring + dedup confirmados end-to-end
 
-### Fase 2.3 — Integración con el agente ⬜ PENDIENTE
+### Fase 2.3 — Integración con el agente ✅ COMPLETADA (2026-06-20)
 
-Herramientas de solo-lectura para el agente conversacional:
-- `list_discovered_offers` — lista ofertas del store con filtros
-- `load_discovered_offer` — carga detalle → generar CV / preparar entrevista
-- `run_job_search` (opcional) — dispara el pipeline desde el chat
+Herramientas de solo-lectura para el agente conversacional, en `src/agent/tools/discovery.py`:
+- [x] `list_discovered_offers` — lista ofertas del store (filtros: status, recommended_only, limit)
+- [x] `load_discovered_offer` — carga detalle completo (campos estructurados, breakdown, pros/cons,
+  texto crudo) → usado para generar CV / preparar entrevista
+- [x] `run_job_search` — dispara `pipeline.run()` desde el chat, sin esperar al cron
 
-Registro en `tools/definitions.py` + `tools/router.py`. El agente central no cambia.
+Registradas en `tools/definitions.py` + `tools/router.py`. El agente central (`agent.py`) no cambió.
+Probado con datos reales del store: list/load funcionando, `run_job_search` confirmó dedup (0
+ofertas nuevas, 36 ya conocidas, 0 errores) sin gastar tokens de IA.
 
 ---
 

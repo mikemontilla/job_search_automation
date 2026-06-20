@@ -122,6 +122,64 @@ TOOLS = [
         },
     },
     {
+        "name": "list_discovered_offers",
+        "description": (
+            "List job offers found by the automated discovery pipeline (career-page "
+            "scrapers and email alerts), already scored for compatibility with the "
+            "profile. Use this to find offers to build a CV for or prep an interview from."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": ["new", "reviewed", "applying", "discarded"],
+                    "description": "Filter by triage status. Omit to get all non-discarded offers.",
+                },
+                "recommended_only": {
+                    "type": "boolean",
+                    "description": "If true, only return offers whose score met the configured threshold.",
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Max offers to return, sorted by score descending. Defaults to 20.",
+                },
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "load_discovered_offer",
+        "description": (
+            "Load full details of one discovered offer by its id (from list_discovered_offers): "
+            "structured fields, the AI compatibility breakdown/rationale/pros/cons, and the raw "
+            "job description text — enough to generate a tailored CV or prep an interview."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "offer_id": {
+                    "type": "string",
+                    "description": "The offer's id, as returned by list_discovered_offers.",
+                },
+            },
+            "required": ["offer_id"],
+        },
+    },
+    {
+        "name": "run_job_search",
+        "description": (
+            "Trigger the discovery pipeline immediately over all configured sources "
+            "(career pages, Serma-style JSON endpoints, email alerts) instead of waiting "
+            "for the next scheduled run. Use when the user asks to check for new offers now."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+        },
+    },
+    {
         "name": "save_session_note",
         "description": (
             "Persist a short summary of what was updated or created in this session. "
