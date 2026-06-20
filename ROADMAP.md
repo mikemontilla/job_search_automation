@@ -14,11 +14,13 @@ CLI (main.py)
         │     ├─ ProfileManager (tools/profile.py)              [Phase 1 ✅]
         │     ├─ CVGenerator    (tools/cv_gen.py)               [Phase 1 ✅]
         │     ├─ JobLoader      (tools/jobs.py)                 [Phase 1 ✅]
-        │     └─ DiscoveryTools (tools/discovery_tools.py)      [Phase 2.3 ⬜]
+        │     ├─ DiscoveryTools (tools/discovery.py)            [Phase 2.3 ✅]
+        │     └─ ApplicationTools (tools/applications.py)       [Phase 3.2 ⬜]
         └─ prompts.py
 
-src/discovery/  ←→  FastAPI web UI + SQLite store               [Phase 2 🔄]
-src/tracking/                                                    [Phase 3 ⬜]
+src/discovery/  ←→  FastAPI web UI + SQLite store (offers)      [Phase 2 ✅]
+src/tracking/   ←→  applications/events (mismo discovery.db) +  [Phase 3 ⬜]
+                    dashboard en el mismo servidor FastAPI
 src/linkedin/                                                    [Phase 4 ⬜]
 ```
 
@@ -26,8 +28,10 @@ src/linkedin/                                                    [Phase 4 ⬜]
 exponerse al agente conversacional, registra herramientas en `tools/definitions.py` +
 `tools/router.py`. El agente central no cambia.
 
-**Punto de encuentro entre módulos:** `data/discovery.db` (SQLite).
-El pipeline de descubrimiento escribe ahí; el agente conversacional lo lee.
+**Punto de encuentro entre módulos:** `data/discovery.db` (SQLite). Discovery escribe `offers`;
+tracking escribe `applications`/`application_events`; el agente conversacional lee ambos (tablas
+disjuntas, mismo archivo). La carpeta `applications/<slug>/` es el punto de encuentro de archivos
+(CVs, job description, prep docs).
 
 ---
 
@@ -162,12 +166,138 @@ ofertas nuevas, 36 ya conocidas, 0 errores) sin gastar tokens de IA.
 
 ---
 
-## Phase 3 — Application Tracking ⬜ PENDIENTE
+## Phase 3 — Application Tracking & Interview Prep ⬜ PENDIENTE
 
-Dashboard web de seguimiento de postulaciones (integrado en el servidor FastAPI de Phase 2):
-- Estado del proceso (screening, entrevista técnica, oferta, rechazado)
-- Versión del CV usado, contacto de RRHH, archivos relevantes
-- Archivos futuros: `src/tracking/`
+Fusiona los features 5/6/7 del documento de requerimientos original. Una **postulación
+(application)** es el objeto central de esta fase: representa una oferta que Miguel está
+persiguiendo activamente. Agrupa, bajo una misma carpeta `applications/<slug>/` y una fila en
+la base de datos, todo lo que se va generando en el proceso — la oferta, los CVs por idioma,
+los documentos de preparación de entrevista, la investigación de la empresa, los contactos de
+RRHH y la línea de tiempo del proceso. El dashboard (3.1) da la vista de seguimiento; la
+preparación de entrevistas (3.2) consume esos mismos documentos para producir material y
+estrategia de nivel superior.
+
+```
+  Discovery offer (status=applying)          CV generado (Phase 1)
+            │  "Promote to application"                │
+            ▼                                          ▼
+   ┌─────────────────────────────────────────────────────────┐
+   │  applications/<slug>/   +   tabla `applications` (SQLite) │
+   │    job_description.md          stage, hr_contact, fechas  │
+   │    <lang>/cv.html              cv_languages, next_action  │
+   │    prep/*.md                   timeline (application_events)│
+   │    research/*.md                                          │
+   └─────────────────────────────────────────────────────────┘
+        ▲                                          │
+        │  tracking dashboard (FastAPI)            │  agent tools (lectura/escritura)
+        │  /applications                           ▼
+   usuario triage                          Interview Prep & Strategy (agente)
+```
+
+**Decisión de almacenamiento:** las postulaciones viven en una tabla nueva `applications`
+(+ `application_events`) dentro del **mismo** `data/discovery.db` (es el punto de encuentro ya
+definido del proyecto). Módulos disjuntos: `src/discovery/` solo toca `offers`; el nuevo
+`src/tracking/` solo toca `applications`/`application_events`. Una postulación puede referenciar
+una oferta de discovery (`offer_id`) o ser standalone (postulación agregada a mano que nunca pasó
+por el pipeline). El `status` de discovery (new/reviewed/applying/discarded) sigue siendo la señal
+de triage gruesa; el `stage` de la postulación es el pipeline detallado del proceso.
+
+### Modelo de datos (`src/tracking/store.py`, sobre `data/discovery.db`)
+
+**Tabla `applications`:**
+- `id` TEXT PK — el slug, coincide con el nombre de carpeta en `applications/`
+- `offer_id` TEXT NULL — FK a `offers.id` si vino de discovery; NULL si es manual
+- `title`, `company`, `location`, `source_url` — snapshot denormalizado (sobrevive aunque la
+  oferta se descarte; soporta postulaciones manuales)
+- `stage` TEXT — `interested` → `applied` → `screening` → `technical` → `final` → `offer` →
+  `accepted` / `rejected` / `withdrawn`
+- `cv_languages` TEXT (JSON) — idiomas de CV ya generados (se puede derivar escaneando la carpeta)
+- `hr_contact` TEXT (JSON: name/email/phone/role)
+- `applied_date`, `next_action`, `next_action_date`
+- `notes` TEXT
+- `created_at`, `updated_at`
+
+**Tabla `application_events`** (línea de tiempo / historial):
+- `id` INTEGER PK, `application_id` TEXT FK
+- `event_type` TEXT — `stage_change` | `note` | `interview_scheduled` | `interview_done` |
+  `document_added`
+- `title`, `detail`, `event_date`, `created_at`
+
+### Convención de carpeta (formaliza `applications/<slug>/`)
+
+```
+applications/<slug>/
+  job_description.md     # texto de la oferta (de discovery.raw_text o pegado a mano)
+  <lang>/cv.html, profile.json   # CVs ya generados por Phase 1
+  prep/
+    screening.md         # respuestas para llamada de screening / RH
+    technical.md         # preguntas técnicas probables según stack/sector + respuestas guía
+    questions_for_them.md# preguntas para hacerle al entrevistador
+    strategy.md          # estrategia: qué destacar, cómo posicionar brechas, negociación
+  research/*.md          # investigación de la empresa (opcional, lo agrega el usuario o el agente)
+```
+
+### 3.1 — Tracking store + dashboard web
+
+- [ ] `src/tracking/models.py` — `Application` dataclass + `ApplicationStage` enum + `ApplicationEvent`
+- [ ] `src/tracking/store.py` — esquema (migración idempotente como en discovery), CRUD:
+  `upsert`, `get`, `list_applications(stage?)`, `set_stage`, `add_event`, `list_events`
+- [ ] `src/tracking/service.py` — `promote_offer(offer_id) -> Application`: crea la fila + la
+  carpeta `applications/<slug>/` + escribe `job_description.md` desde `offer.raw_text`, marca la
+  oferta como `applying`, y registra el evento inicial. Genera el slug desde company+title.
+- [ ] Rutas FastAPI nuevas en `src/discovery/web/app.py` (mismo servidor):
+  - `GET /applications` — dashboard: tabla/columnas por `stage`, filtros, próxima acción
+  - `GET /applications/{id}` — detalle: metadata editable, timeline, links a CVs y a `prep/*.md`
+  - `POST /applications` — crear (promover desde oferta, o manual)
+  - `POST /applications/{id}/stage` — cambiar etapa (registra `stage_change` event)
+  - `POST /applications/{id}/event` — agregar nota / evento de entrevista
+  - servir/visualizar archivos de la carpeta (CV, prep docs) renderizando markdown
+- [ ] Botón **"Promote to application"** en `detail.html` de la oferta de discovery
+- [ ] Templates: `applications.html`, `application_detail.html`, reutilizando el CSS existente
+- [ ] Nav entre las dos vistas (Discovery ↔ Applications) en `base.html`
+
+### 3.2 — Preparación de entrevistas y estrategia (agente)
+
+El agente lee **todos** los documentos que se han ido generando para la postulación (job
+description, CV adaptado, notas de tracking, investigación, eventos previos) más el breakdown de
+compatibilidad que ya calculó discovery (`score`, `pros`/`cons`, `rationale`, `breakdown`), y con
+ese contexto produce material y estrategia de nivel superior.
+
+- [ ] `src/agent/tools/applications.py` — herramientas de lectura/escritura sobre la postulación:
+  - `list_applications(stage?)` — lista postulaciones del store
+  - `load_application(app_id)` — metadata + inventario de archivos de la carpeta + contenido de
+    `job_description.md` + prep existente + (vía Phase 2.3) el `load_discovered_offer(offer_id)`
+    asociado para traer score/pros/cons/rationale
+  - `read_application_file(app_id, relpath)` — leer cualquier doc generado en la carpeta
+  - `save_prep_document(app_id, kind, content_md)` — escribe en `prep/<kind>.md` y registra
+    `document_added` event
+  - `update_application(app_id, stage?, hr_contact?, notes?, next_action?)`
+  - `log_application_event(app_id, type, title, detail, date)`
+- [ ] Registro en `tools/definitions.py` + `tools/router.py` (el agente central no cambia)
+- [ ] Prompt: nueva sección "Interview prep & strategy discipline" en `prompts.py` — flujo:
+  cargar la postulación → leer todos sus documentos → identificar nivel de entrevista (screening
+  vs técnica vs final) → generar el doc correspondiente → guardarlo en `prep/` → resumir al usuario
+- [ ] Estrategia: el agente sintetiza, a partir de `pros`/`cons`/`rationale` + perfil + oferta,
+  qué fortalezas destacar, cómo mitigar brechas, y ángulos de posicionamiento/negociación →
+  `prep/strategy.md`
+
+### Integraciones con los demás componentes
+
+| Desde | Hacia | Mecanismo |
+|---|---|---|
+| Discovery (oferta `applying`) | Tracking | `promote_offer()` siembra la postulación + `job_description.md` |
+| CV gen (Phase 1) | Tracking | `cv_languages` se deriva escaneando `applications/<slug>/<lang>/cv.html` (sin acoplar) |
+| Tracking | Agente (3.2) | tools en `src/agent/tools/applications.py` leen la carpeta + el store |
+| Discovery (Phase 2.3) | Agente (3.2) | `load_discovered_offer` aporta score/pros/cons/rationale al prep |
+| Agente (3.2) | Tracking | `save_prep_document` / `log_application_event` escriben de vuelta en la postulación |
+
+### Orden de implementación sugerido
+
+1. `models.py` + `store.py` + migración (tablas vacías, probadas)
+2. `service.promote_offer()` + formalización de carpeta (test: promover una oferta real)
+3. Dashboard web (list + detail + stage + timeline) integrado en el FastAPI existente
+4. Tools de agente para postulaciones (list/load/update/log_event) — probadas vía `dispatch`
+5. Generación de prep + estrategia + prompt (test end-to-end con una oferta descubierta real)
 
 ---
 
@@ -190,3 +320,7 @@ Dashboard web de seguimiento de postulaciones (integrado en el servidor FastAPI 
 | Web UI | FastAPI + Jinja2 + htmx | Un solo proceso, mínimo JS, server-side rendering |
 | Playwright | Sí, como fallback | Muchas páginas de ofertas requieren JS para renderizar |
 | Discovery ↔ Agente | SQLite como punto de encuentro | Discovery es pipeline determinista; el agente lo consume en fases posteriores |
+| Persistencia de postulaciones | Tabla `applications` en el mismo `discovery.db` | Un solo archivo/servidor; tablas disjuntas mantienen los módulos desacoplados |
+| Tracking vs status de discovery | `stage` detallado aparte del `status` de triage | Distinta granularidad: triage de oferta vs pipeline de proceso de contratación |
+| Interview prep | Markdown en `applications/<slug>/prep/` + tools de agente | El prep es generativo y conversacional; reusa el agente existente, no un módulo aislado |
+| Estrategia de entrevista | Reusa `pros`/`cons`/`rationale` de discovery | El breakdown de compatibilidad ya identifica fortalezas y brechas a posicionar |
