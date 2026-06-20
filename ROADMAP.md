@@ -114,7 +114,7 @@ páginas SPA pesadas (ej. Workday) necesitaban esperar a que la red se asentara
 - Tarjetas visuales de **Strengths / Gaps** (pros/cons) en la página de detalle, generadas
   por el mismo llamado de IA que hace el scoring
 
-### Fase 2.1 — Fuentes automáticas: career pages ✅ COMPLETADA (2026-06-14)
+### Fase 2.1 — Fuentes automáticas: career pages ✅ COMPLETADA (2026-06-20)
 
 - [x] `src/discovery/sources/career_page.py` — `CareerPageSource`: abre la página de listado
   con Playwright, extrae los links de oferta individuales con un `link_selector` CSS
@@ -125,16 +125,28 @@ páginas SPA pesadas (ej. Workday) necesitaban esperar a que la red se asentara
   no es un no-op
 - [x] `fetch.goto_and_settle()` extraído como helper compartido (mismo wait robusto que el
   fix de Workday, reutilizado para listas y para páginas de detalle)
-- [x] Probado contra una página real de NXP Workday (búsqueda "embedded" en Toulouse) → 7
-  ofertas extraídas correctamente
+- [x] Probado contra fuentes reales: Siemens/Avature (server-rendered, solo httpx) y NXP/Workday
+  (SPA JS, requiere Playwright) — ambos casos confirmados en producción
+- [x] `src/discovery/sources/wp_ajax.py` — `WpAjaxJsonSource`: para sitios que filtran
+  client-side vía POST a `wp-admin/admin-ajax.php` (ej. Serma/Zoho Recruit) en vez de cambiar
+  la URL — llama el endpoint JSON directo, sin Playwright, con filtrado server-side (ahorra
+  tokens de IA al no traer ofertas irrelevantes)
+- [x] Configuradas 2 fuentes de Serma (`embarqué`, `image`) usando `type: wp_ajax`
 - [x] Cron documentado en `README.md`
 
-### Fase 2.2 — Alertas por email ⬜ PENDIENTE
+### Fase 2.2 — Alertas por email ✅ COMPLETADA (2026-06-20)
 
-- `src/discovery/sources/email_alerts.py`
-- Gmail API (OAuth read-only): leer alertas de LinkedIn / Indeed
-- Seguir links con contexto Playwright persistente (usuario ya hizo login)
-- Configurar en `discovery_config.yaml → email`
+- [x] `src/discovery/gmail_auth.py` — OAuth2 de solo lectura (`gmail.readonly`), flujo
+  interactivo único + cacheo/refresh de token (`config/gmail_token.json`, gitignored)
+- [x] `src/discovery/sources/email_alerts.py` — `EmailAlertsSource`: busca correos de
+  LinkedIn/Indeed, extrae links de oferta del HTML, canonicaliza (quita parámetros de
+  tracking) antes del dedup — una misma oferta aparece con varios links distintos por correo
+  (logo, título, botón) y sin canonicalizar se procesaría y puntuaría varias veces
+- [x] CLI: `python -m src.discovery email-auth` (consentimiento inicial, requiere navegador)
+- [x] `discovery_config.yaml → email` — `enabled`, `lookback_days`, `max_results`,
+  `senders`/`link_patterns` opcionales
+- [x] Probado en vivo contra la cuenta real del usuario: 7 ofertas únicas extraídas de
+  alertas de LinkedIn, fetch + scoring + dedup confirmados end-to-end
 
 ### Fase 2.3 — Integración con el agente ⬜ PENDIENTE
 
