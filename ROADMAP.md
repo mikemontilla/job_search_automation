@@ -234,8 +234,19 @@ applications/<slug>/
     technical.md         # preguntas técnicas probables según stack/sector + respuestas guía
     questions_for_them.md# preguntas para hacerle al entrevistador
     strategy.md          # estrategia: qué destacar, cómo posicionar brechas, negociación
-  research/*.md          # investigación de la empresa (opcional, lo agrega el usuario o el agente)
+  research/
+    company.md            # investigación de la empresa (opcional, lo agrega el usuario o el agente)
+    interviewer_<slug>.md # perfil de cada entrevistador conocido (rol, trayectoria, intereses, temas en común)
 ```
+
+**Investigación de entrevistadores:** cuando se agenda una entrevista (`application_events` con
+`event_type=interview_scheduled`), el `detail` debe poder llevar la lista de participantes
+(`[{name, role, linkedin_url?}]`, JSON). Antes de redactar `prep/technical.md` o
+`prep/questions_for_them.md`, el agente usa esos nombres/roles — y cualquier perfil público que el
+usuario le pase o que pueda buscar — para escribir `research/interviewer_<slug>.md` por persona
+(trayectoria, rol actual, posibles puntos en común o temas técnicos de interés). Las preguntas y
+respuestas guía generadas después combinan esa investigación con la oferta y el perfil de Miguel,
+en vez de basarse solo en el texto de la oferta.
 
 ### 3.1 — Tracking store + dashboard web
 
@@ -271,12 +282,18 @@ ese contexto produce material y estrategia de nivel superior.
   - `read_application_file(app_id, relpath)` — leer cualquier doc generado en la carpeta
   - `save_prep_document(app_id, kind, content_md)` — escribe en `prep/<kind>.md` y registra
     `document_added` event
+  - `save_interviewer_research(app_id, slug, content_md)` — escribe en
+    `research/interviewer_<slug>.md` y registra `document_added` event
   - `update_application(app_id, stage?, hr_contact?, notes?, next_action?)`
-  - `log_application_event(app_id, type, title, detail, date)`
+  - `log_application_event(app_id, type, title, detail, date)` — `detail` puede incluir la lista
+    de entrevistadores (`interview_scheduled`) que dispara la investigación de cada uno
 - [ ] Registro en `tools/definitions.py` + `tools/router.py` (el agente central no cambia)
 - [ ] Prompt: nueva sección "Interview prep & strategy discipline" en `prompts.py` — flujo:
   cargar la postulación → leer todos sus documentos → identificar nivel de entrevista (screening
-  vs técnica vs final) → generar el doc correspondiente → guardarlo en `prep/` → resumir al usuario
+  vs técnica vs final) → si hay entrevistadores registrados sin investigación aún, pedir/buscar su
+  perfil público y guardarlo con `save_interviewer_research` → generar el doc correspondiente
+  (combinando oferta + perfil de Miguel + investigación de entrevistadores) → guardarlo en `prep/`
+  → resumir al usuario
 - [ ] Estrategia: el agente sintetiza, a partir de `pros`/`cons`/`rationale` + perfil + oferta,
   qué fortalezas destacar, cómo mitigar brechas, y ángulos de posicionamiento/negociación →
   `prep/strategy.md`
