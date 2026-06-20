@@ -155,7 +155,7 @@ def create_application(offer_id: str = Form(...)):
 
 
 @app.post("/applications/{app_id}/stage")
-def change_application_stage(app_id: str, value: str, redirect_to: str = "detail"):
+def change_application_stage(app_id: str, value: str = Form(...), redirect_to: str = Form("detail")):
     if value not in _STAGES:
         return HTMLResponse(f"Invalid stage: {value}", status_code=400)
     tracking_store.set_stage(app_id, value)
