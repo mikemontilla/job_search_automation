@@ -46,6 +46,22 @@ def _fetch_httpx(url: str, timeout: int) -> str:
     return _html_to_text(resp.text)
 
 
+def goto_and_settle(page, url: str, timeout: int) -> None:
+    """Navigate a Playwright page and wait for it to settle.
+
+    Shared by the detail-page fetcher and the career_page listing source —
+    both need to wait out the XHR calls that JS-heavy SPAs (Workday,
+    Greenhouse, etc.) use to fetch their content after the initial load.
+    """
+    page.goto(url, timeout=timeout * 1000, wait_until="domcontentloaded")
+    try:
+        page.wait_for_load_state("networkidle", timeout=10_000)
+    except Exception:
+        # Long-polling or WebSocket pages never reach networkidle; fall back
+        # to a fixed wait so we at least capture what's rendered so far.
+        page.wait_for_timeout(3000)
+
+
 def _fetch_playwright(url: str, timeout: int) -> str:
     try:
         from playwright.sync_api import sync_playwright
@@ -58,15 +74,7 @@ def _fetch_playwright(url: str, timeout: int) -> str:
         browser = p.chromium.launch(headless=True)
         try:
             page = browser.new_page(user_agent=_UA)
-            page.goto(url, timeout=timeout * 1000, wait_until="domcontentloaded")
-            # Wait until the network goes quiet — critical for JS-heavy SPAs (Workday,
-            # Greenhouse, etc.) that fetch job data via XHR after the initial page load.
-            try:
-                page.wait_for_load_state("networkidle", timeout=10_000)
-            except Exception:
-                # Long-polling or WebSocket pages never reach networkidle; fall back
-                # to a fixed wait so we at least capture what's rendered so far.
-                page.wait_for_timeout(3000)
+            goto_and_settle(page, url, timeout)
             content = page.content()
         finally:
             browser.close()
