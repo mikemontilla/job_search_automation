@@ -1,11 +1,12 @@
 import logging
 
 from src.discovery import store
-from src.discovery.config import SCORE_THRESHOLD
+from src.discovery.config import SCORE_THRESHOLD, SOURCES
 from src.discovery.fetch import fetch, FetchError
 from src.discovery.models import Offer, make_id
 from src.discovery.scoring import analyze_offer
 from src.discovery.sources.base import RawOffer, Source
+from src.discovery.sources.career_page import CareerPageSource
 from src.discovery.sources.manual import ManualSource
 
 logger = logging.getLogger("discovery")
@@ -62,13 +63,12 @@ def ingest_url(url: str) -> dict:
 
 
 def run() -> dict:
-    """Run every configured source. Phase 2.0 has no automatic sources yet,
-    so this is a no-op summary until career-page/email sources are added."""
+    """Run every configured source (career pages today; email alerts in Phase 2.2)."""
     store.init_schema()
     total = {"added": 0, "skipped": 0, "error": 0}
     sources = _configured_sources()
     if not sources:
-        logger.info("No automatic sources configured yet (Phase 2.0).")
+        logger.info("No automatic sources configured in discovery_config.yaml yet.")
     for source in sources:
         summary = process_source(source)
         for key in total:
@@ -77,5 +77,14 @@ def run() -> dict:
 
 
 def _configured_sources() -> list[Source]:
-    # Phase 2.1+ will build career-page / email sources from config here.
-    return []
+    sources: list[Source] = []
+    for entry in SOURCES:
+        if not isinstance(entry, dict) or not entry.get("url"):
+            logger.warning("Skipping malformed source entry: %r", entry)
+            continue
+        sources.append(CareerPageSource(
+            name=entry.get("name", entry["url"]),
+            url=entry["url"],
+            link_selector=entry.get("link_selector"),
+        ))
+    return sources

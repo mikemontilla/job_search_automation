@@ -104,18 +104,30 @@ cron / "Run now" (web) / CLI
 - [x] `__main__.py` — CLI: `run` / `ingest` / `web`
 - [x] `.gitignore` actualizado
 
-**Prueba en vivo pendiente (usa tokens):**
-1. `python -m src.discovery web` → pegar URL real en la UI
-2. Verificar score, campos parseados y breakdown en el browser
-3. Re-pegar la misma URL → no se duplica, log `skip (already seen, no AI call)`
+**Prueba en vivo:** ✅ confirmada por el usuario (2026-06-14) — ingest manual, score/breakdown
+visibles en el browser, dedup funcionando. También se corrigió un bug real durante la prueba:
+páginas SPA pesadas (ej. Workday) necesitaban esperar a que la red se asentara
+(`page.wait_for_load_state("networkidle")`) en vez de un timeout fijo — ver `fetch.py`.
 
-### Fase 2.1 — Fuentes automáticas: career pages ⬜ PENDIENTE
+**Mejoras de usabilidad agregadas tras la prueba:**
+- Indicador de carga (spinner) en el formulario de ingest mientras Claude procesa la oferta
+- Tarjetas visuales de **Strengths / Gaps** (pros/cons) en la página de detalle, generadas
+  por el mismo llamado de IA que hace el scoring
 
-- `src/discovery/sources/career_page.py`
-- Lee URLs preconfiguradas en `discovery_config.yaml → sources[]`
-  (cada URL ya tiene los filtros aplicados, ej. `https://careers.airbus.com/...?keyword=embedded`)
-- Playwright navega la lista de resultados → extrae URLs individuales → pipeline
-- Documentar cron job para ejecución automática
+### Fase 2.1 — Fuentes automáticas: career pages ✅ COMPLETADA (2026-06-14)
+
+- [x] `src/discovery/sources/career_page.py` — `CareerPageSource`: abre la página de listado
+  con Playwright, extrae los links de oferta individuales con un `link_selector` CSS
+  configurable (o un patrón de URL de respaldo si no se configura uno)
+- [x] `discovery_config.yaml → sources[]` — cada entrada: `name`, `url` (con filtros ya
+  aplicados), `link_selector` opcional
+- [x] `pipeline._configured_sources()` — construye las fuentes desde la config; `run()` ya
+  no es un no-op
+- [x] `fetch.goto_and_settle()` extraído como helper compartido (mismo wait robusto que el
+  fix de Workday, reutilizado para listas y para páginas de detalle)
+- [x] Probado contra una página real de NXP Workday (búsqueda "embedded" en Toulouse) → 7
+  ofertas extraídas correctamente
+- [x] Cron documentado en `README.md`
 
 ### Fase 2.2 — Alertas por email ⬜ PENDIENTE
 

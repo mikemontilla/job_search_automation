@@ -22,8 +22,23 @@ web:
   host: 127.0.0.1
   port: 8000
 
-# Configured career/search-page sources (Phase 2.1). Each entry is an HTTP URL
-# with its query params already set so the page lists only relevant offers.
+# Configured career/search-page sources (Phase 2.1). Each entry is a company
+# search/listing page with filters (keywords, location, etc.) already baked
+# into the URL, so the page lists only relevant offers.
+#
+# `link_selector` is a CSS selector matching the <a> tags that link to an
+# individual offer on that listing page. It is site-specific — inspect the
+# page in a browser (right-click an offer title -> Inspect) to find one.
+# If omitted, a best-effort URL pattern is used instead (less reliable).
+#
+# Example:
+# sources:
+#   - name: "Airbus — Embedded Software (Toulouse)"
+#     url: "https://www.airbus.com/en/careers/search?keywords=embedded&location=toulouse"
+#     link_selector: "a[href*='/jobs/']"
+#   - name: "NXP — Internships (Toulouse)"
+#     url: "https://nxp.wd3.myworkdayjobs.com/fr-FR/careers?locations=98d67abaaa8a100fa633b715bb949297&q=embedded"
+#     link_selector: "a[data-automation-id='jobTitle']"
 sources: []
 
 # Email-alert ingestion (Phase 2.2). Disabled until implemented.

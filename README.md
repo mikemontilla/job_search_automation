@@ -66,13 +66,35 @@ Open **http://127.0.0.1:8000** in a browser. From here you can:
 python -m src.discovery ingest "https://careers.example.com/jobs/embedded-engineer-123"
 ```
 
+#### Configure automatic career-page sources
+
+Edit `config/discovery_config.yaml` to add company search/listing pages — URLs that already
+have your filters (keyword, location) applied, so the page lists only relevant offers:
+
+```yaml
+sources:
+  - name: "Airbus — Embedded Software (Toulouse)"
+    url: "https://www.airbus.com/en/careers/search?keywords=embedded&location=toulouse"
+    link_selector: "a[href*='/jobs/']"
+  - name: "NXP — Internships (Toulouse)"
+    url: "https://nxp.wd3.myworkdayjobs.com/fr-FR/careers?locations=98d67abaaa8a100fa633b715bb949297&q=embedded"
+    link_selector: "a[data-automation-id='jobTitle']"
+```
+
+`link_selector` is a CSS selector matching the `<a>` tags that link to an individual offer on
+that listing page — it's site-specific. To find it: open the listing page in a browser,
+right-click an offer title, choose *Inspect*, and copy a selector that matches just those links
+(an attribute like `data-automation-id`, or a distinctive class/href pattern).
+
 #### Run the full discovery pipeline
 
 ```bash
 python -m src.discovery run
 ```
 
-Runs all sources configured in `config/discovery_config.yaml`. In Phase 2.0 this is a no-op unless you have manual sources — use `ingest` or the web UI instead. Automatic sources (career pages, email alerts) are added in later phases.
+Runs every source configured above: opens each listing page with a headless browser, extracts
+individual offer links, and feeds each one through the same fetch → score → store pipeline used
+by manual ingest (still skipping anything already known, at no AI cost).
 
 #### Schedule automatic runs with cron
 
