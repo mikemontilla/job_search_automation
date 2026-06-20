@@ -86,6 +86,19 @@ sources:
       limit: 100
     detail_url_template: "https://www.serma.com/carrieres/offres-emploi/{id}"
 
-# Email-alert ingestion (Phase 2.2). Disabled until implemented.
+# Email-alert ingestion (Phase 2.2): reads LinkedIn/Indeed job-alert emails
+# from Gmail (read-only OAuth) and extracts the job links inside.
+#
+# One-time setup before enabling:
+#   1. Save the OAuth client secret (Desktop app type, from Google Cloud
+#      Console) as config/gmail_client_secret.json
+#   2. Run: python -m src.discovery email-auth   (opens a browser once)
+#   3. Set enabled: true below
+#
+# `senders` / `link_patterns` override the built-in LinkedIn/Indeed defaults
+# in src/discovery/sources/email_alerts.py — only needed for other alert
+# senders.
 email:
-  enabled: false
+  enabled: true
+  lookback_days: 14
+  max_results: 20

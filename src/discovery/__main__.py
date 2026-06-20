@@ -23,6 +23,13 @@ def _cmd_web(_args) -> None:
     uvicorn.run("src.discovery.web.app:app", host=WEB_HOST, port=WEB_PORT)
 
 
+def _cmd_email_auth(_args) -> None:
+    from src.discovery import gmail_auth
+
+    gmail_auth.authenticate()
+    print("Gmail read-only access authorized. Token cached for future runs.")
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -36,8 +43,15 @@ def main() -> None:
 
     sub.add_parser("web", help="Serve the review web UI")
 
+    sub.add_parser("email-auth", help="One-time interactive Gmail OAuth consent (read-only)")
+
     args = parser.parse_args()
-    {"run": _cmd_run, "ingest": _cmd_ingest, "web": _cmd_web}[args.command](args)
+    {
+        "run": _cmd_run,
+        "ingest": _cmd_ingest,
+        "web": _cmd_web,
+        "email-auth": _cmd_email_auth,
+    }[args.command](args)
 
 
 if __name__ == "__main__":

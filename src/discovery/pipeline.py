@@ -1,12 +1,13 @@
 import logging
 
 from src.discovery import store
-from src.discovery.config import SCORE_THRESHOLD, SOURCES
+from src.discovery.config import EMAIL, SCORE_THRESHOLD, SOURCES
 from src.discovery.fetch import fetch, FetchError
 from src.discovery.models import Offer, make_id
 from src.discovery.scoring import analyze_offer
 from src.discovery.sources.base import RawOffer, Source
 from src.discovery.sources.career_page import CareerPageSource
+from src.discovery.sources.email_alerts import EmailAlertsSource
 from src.discovery.sources.manual import ManualSource
 from src.discovery.sources.wp_ajax import WpAjaxJsonSource
 
@@ -64,10 +65,17 @@ def ingest_url(url: str) -> dict:
 
 
 def run() -> dict:
-    """Run every configured source (career pages, wp_ajax; email alerts in Phase 2.2)."""
+    """Run every configured source: career pages, wp_ajax, and (if enabled) email alerts."""
     store.init_schema()
     total = {"added": 0, "skipped": 0, "error": 0}
     sources = _configured_sources()
+    if EMAIL.get("enabled"):
+        sources.append(EmailAlertsSource(
+            senders=EMAIL.get("senders"),
+            link_patterns=EMAIL.get("link_patterns"),
+            lookback_days=EMAIL.get("lookback_days", 14),
+            max_results=EMAIL.get("max_results", 20),
+        ))
     if not sources:
         logger.info("No automatic sources configured in discovery_config.yaml yet.")
     for source in sources:
