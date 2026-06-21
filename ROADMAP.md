@@ -274,7 +274,7 @@ description, CV adaptado, notas de tracking, investigación, eventos previos) m�
 compatibilidad que ya calculó discovery (`score`, `pros`/`cons`, `rationale`, `breakdown`), y con
 ese contexto produce material y estrategia de nivel superior.
 
-- [ ] `src/agent/tools/applications.py` — herramientas de lectura/escritura sobre la postulación:
+- [x] `src/agent/tools/applications.py` — herramientas de lectura/escritura sobre la postulación:
   - `list_applications(stage?)` — lista postulaciones del store
   - `load_application(app_id)` — metadata + inventario de archivos de la carpeta + contenido de
     `job_description.md` + prep existente + (vía Phase 2.3) el `load_discovered_offer(offer_id)`
@@ -287,7 +287,7 @@ ese contexto produce material y estrategia de nivel superior.
   - `update_application(app_id, stage?, hr_contact?, notes?, next_action?)`
   - `log_application_event(app_id, type, title, detail, date)` — `detail` puede incluir la lista
     de entrevistadores (`interview_scheduled`) que dispara la investigación de cada uno
-- [ ] Registro en `tools/definitions.py` + `tools/router.py` (el agente central no cambia)
+- [x] Registro en `tools/definitions.py` + `tools/router.py` (el agente central no cambia)
 - [ ] Prompt: nueva sección "Interview prep & strategy discipline" en `prompts.py` — flujo:
   cargar la postulación → leer todos sus documentos → identificar nivel de entrevista (screening
   vs técnica vs final) → si hay entrevistadores registrados sin investigación aún, pedir/buscar su

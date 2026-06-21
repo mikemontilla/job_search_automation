@@ -61,3 +61,35 @@ def promote_offer(offer_id: str) -> Application:
     ))
 
     return application
+
+
+def file_inventory(slug: str) -> dict:
+    """List the CV, prep, and research files already generated for an application."""
+    folder = APPLICATIONS_DIR / slug
+    if not folder.exists():
+        return {"cvs": [], "prep": [], "research": []}
+    cvs = sorted(p.relative_to(folder).as_posix() for p in folder.glob("*/cv.html"))
+    prep_dir, research_dir = folder / "prep", folder / "research"
+    prep = sorted(p.relative_to(folder).as_posix() for p in prep_dir.glob("*.md")) if prep_dir.exists() else []
+    research = sorted(p.relative_to(folder).as_posix() for p in research_dir.glob("*.md")) if research_dir.exists() else []
+    return {"cvs": cvs, "prep": prep, "research": research}
+
+
+def resolve_file(slug: str, relpath: str):
+    """Resolve relpath inside applications/<slug>/, guarding against path traversal. Returns None if outside or missing."""
+    base = (APPLICATIONS_DIR / slug).resolve()
+    path = (base / relpath).resolve()
+    if not path.is_relative_to(base) or not path.exists():
+        return None
+    return path
+
+
+def write_doc(slug: str, relpath: str, content_md: str):
+    """Write a markdown doc inside applications/<slug>/, creating parent dirs as needed."""
+    base = (APPLICATIONS_DIR / slug).resolve()
+    path = (base / relpath).resolve()
+    if not path.is_relative_to(base):
+        raise ValueError(f"Path '{relpath}' escapes the application folder")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content_md, encoding="utf-8")
+    return path

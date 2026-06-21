@@ -31,9 +31,6 @@ browser_profile/
 config/gmail_client_secret.json
 config/gmail_token.json
 
-# Generated CV files inside application folders (keep job_description.md)
-applications/**/cv.html
-applications/**/profile.json
-applications/**/support.js
-applications/**/image-slot.js
-applications/**/uploads/
+# Application tracking data — personal/job-search content, never committed
+applications/*/
+!applications/.gitkeep

@@ -104,17 +104,6 @@ def delete_offer(offer_id: str, redirect: int = 0):
     return HTMLResponse("")
 
 
-def _file_inventory(slug: str) -> dict:
-    folder = APPLICATIONS_DIR / slug
-    if not folder.exists():
-        return {"cvs": [], "prep": [], "research": []}
-    cvs = sorted(p.relative_to(folder).as_posix() for p in folder.glob("*/cv.html"))
-    prep_dir, research_dir = folder / "prep", folder / "research"
-    prep = sorted(p.relative_to(folder).as_posix() for p in prep_dir.glob("*.md")) if prep_dir.exists() else []
-    research = sorted(p.relative_to(folder).as_posix() for p in research_dir.glob("*.md")) if research_dir.exists() else []
-    return {"cvs": cvs, "prep": prep, "research": research}
-
-
 @app.get("/applications", response_class=HTMLResponse)
 def applications_index(request: Request, stage: str | None = None):
     applications = tracking_store.list_applications(stage=stage or None)
@@ -142,7 +131,7 @@ def application_detail(request: Request, app_id: str):
             "events": tracking_store.list_events(app_id),
             "stages": _STAGES,
             "event_types": _EVENT_TYPES,
-            "files": _file_inventory(app_id),
+            "files": service.file_inventory(app_id),
             "job_description": job_description,
         },
     )
@@ -190,9 +179,8 @@ def add_application_event(
 
 @app.get("/applications/{app_id}/doc/{relpath:path}", response_class=HTMLResponse)
 def application_doc(request: Request, app_id: str, relpath: str):
-    base = (APPLICATIONS_DIR / app_id).resolve()
-    path = (base / relpath).resolve()
-    if not path.is_relative_to(base) or not path.exists() or path.suffix != ".md":
+    path = service.resolve_file(app_id, relpath)
+    if not path or path.suffix != ".md":
         return HTMLResponse("Not found", status_code=404)
     html = md.markdown(path.read_text(encoding="utf-8"))
     return templates.TemplateResponse(
