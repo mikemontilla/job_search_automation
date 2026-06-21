@@ -15,11 +15,11 @@ CLI (main.py)
         │     ├─ CVGenerator    (tools/cv_gen.py)               [Phase 1 ✅]
         │     ├─ JobLoader      (tools/jobs.py)                 [Phase 1 ✅]
         │     ├─ DiscoveryTools (tools/discovery.py)            [Phase 2.3 ✅]
-        │     └─ ApplicationTools (tools/applications.py)       [Phase 3.2 ⬜]
+        │     └─ ApplicationTools (tools/applications.py)       [Phase 3.2 ✅]
         └─ prompts.py
 
 src/discovery/  ←→  FastAPI web UI + SQLite store (offers)      [Phase 2 ✅]
-src/tracking/   ←→  applications/events (mismo discovery.db) +  [Phase 3 ⬜]
+src/tracking/   ←→  applications/events (mismo discovery.db) +  [Phase 3 ✅]
                     dashboard en el mismo servidor FastAPI
 src/linkedin/                                                    [Phase 4 ⬜]
 ```
@@ -166,7 +166,7 @@ ofertas nuevas, 36 ya conocidas, 0 errores) sin gastar tokens de IA.
 
 ---
 
-## Phase 3 — Application Tracking & Interview Prep ⬜ PENDIENTE
+## Phase 3 — Application Tracking & Interview Prep ✅ COMPLETADA (2026-06-21)
 
 Fusiona los features 5/6/7 del documento de requerimientos original. Una **postulación
 (application)** es el objeto central de esta fase: representa una oferta que Miguel está
@@ -288,13 +288,14 @@ ese contexto produce material y estrategia de nivel superior.
   - `log_application_event(app_id, type, title, detail, date)` — `detail` puede incluir la lista
     de entrevistadores (`interview_scheduled`) que dispara la investigación de cada uno
 - [x] Registro en `tools/definitions.py` + `tools/router.py` (el agente central no cambia)
-- [ ] Prompt: nueva sección "Interview prep & strategy discipline" en `prompts.py` — flujo:
+- [x] Prompt: nueva sección "Interview prep & strategy discipline" en `prompts.py` — flujo:
   cargar la postulación → leer todos sus documentos → identificar nivel de entrevista (screening
-  vs técnica vs final) → si hay entrevistadores registrados sin investigación aún, pedir/buscar su
-  perfil público y guardarlo con `save_interviewer_research` → generar el doc correspondiente
-  (combinando oferta + perfil de Miguel + investigación de entrevistadores) → guardarlo en `prep/`
-  → resumir al usuario
-- [ ] Estrategia: el agente sintetiza, a partir de `pros`/`cons`/`rationale` + perfil + oferta,
+  vs técnica vs final) → si hay entrevistadores registrados sin investigación aún, el agente NO
+  busca por sí mismo (no tiene acceso a internet): le sugiere a Miguel qué y dónde buscar
+  (LinkedIn, página de equipo de la empresa, GitHub/publicaciones) y guarda lo que él reporte con
+  `save_interviewer_research` → genera el doc correspondiente (combinando oferta + perfil de
+  Miguel + investigación de entrevistadores) → lo guarda en `prep/` → resume a Miguel
+- [x] Estrategia: el agente sintetiza, a partir de `pros`/`cons`/`rationale` + perfil + oferta,
   qué fortalezas destacar, cómo mitigar brechas, y ángulos de posicionamiento/negociación →
   `prep/strategy.md`
 
