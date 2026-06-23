@@ -82,8 +82,11 @@ class Offer:
     def apply_scoring(self, data: dict, threshold: int) -> None:
         """Merge the AI extract+score result into this offer."""
         for key, value in data.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
+            if not hasattr(self, key):
+                continue
+            if key in LIST_FIELDS and isinstance(value, str):
+                value = [value] if value.strip() else []
+            setattr(self, key, value)
         if self.score is not None:
             self.recommended = self.score >= threshold
 
