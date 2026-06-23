@@ -372,7 +372,7 @@ data/linkedin/
 ```
 
 ### 4.1 — Entrada de datos + agregación de keywords (`src/linkedin/`, determinista)
-- [ ] `src/linkedin/service.py` — read/write del snapshot y de `recommendations/<section>.md`,
+- [x] `src/linkedin/service.py` — read/write del snapshot y de `recommendations/<section>.md`,
   inventario de archivos y resolución de rutas con guardia anti-traversal (espejo de
   `src/tracking/service.py`)
 - [ ] `src/linkedin/keywords.py` — `target_keywords(scope="recommended")`: lee la tabla `offers`

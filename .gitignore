@@ -34,3 +34,7 @@ config/gmail_token.json
 # Application tracking data — personal/job-search content, never committed
 applications/*/
 !applications/.gitkeep
+
+# LinkedIn optimization data — personal content, never committed
+data/linkedin/*
+!data/linkedin/.gitkeep

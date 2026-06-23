@@ -6,6 +6,7 @@ DATA_DIR = ROOT / "data"
 RESUMES_DIR = DATA_DIR / "resumes"
 TEMPLATES_DIR = DATA_DIR / "templates"
 APPLICATIONS_DIR = ROOT / "applications"
+LINKEDIN_DIR = DATA_DIR / "linkedin"
 CONFIG_DIR = ROOT / "config"
 SESSION_LOG = DATA_DIR / "session_log.json"
 
