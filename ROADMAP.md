@@ -384,14 +384,16 @@ data/linkedin/
   `snapshot.md`. La vía de pegar texto no necesita esto
 
 ### 4.2 — Optimización por el agente (tools + prompt)
-- [ ] `src/agent/tools/linkedin.py`:
+- [x] `src/agent/tools/linkedin.py`:
   - `load_linkedin_profile()` — snapshot actual + inventario de recomendaciones + `target_keywords()`
     + resumen del perfil `.md` para comparar (el "cargar todo para decidir", análogo a
     `load_application`)
   - `save_linkedin_snapshot(content_md)` — guarda lo que Miguel pega/importa
   - `save_linkedin_recommendation(section, content_md)` — escribe `recommendations/<section>.md`
   - `read_linkedin_file(relpath)` — leer cualquier doc
-- [ ] Registro en `tools/definitions.py` + `tools/router.py` (el agente central no cambia)
+  - (de 4.3) `save_linkedin_post(slug, content_md)` + `list_linkedin_posts()` — se implementaron
+    junto con el resto del archivo, ya que son el mismo patrón CRUD
+- [x] Registro en `tools/definitions.py` + `tools/router.py` (el agente central no cambia)
 - [ ] Prompt: nueva sección "LinkedIn optimization discipline" en `prompts.py` — flujo:
   - si no hay snapshot o está viejo → pedirle a Miguel que pegue sus secciones (o importe el export)
     y guardarlo con `save_linkedin_snapshot`
@@ -406,8 +408,8 @@ data/linkedin/
   - decirle a Miguel exactamente qué copiar/pegar en cada sección de LinkedIn
 
 ### 4.3 — Estrategia de contenido y publicaciones (en alcance)
-- [ ] `src/agent/tools/linkedin.py`: `save_linkedin_post(slug, content_md)` + `list_linkedin_posts()`
-  (escriben/listan en `data/linkedin/posts/`)
+- [x] `src/agent/tools/linkedin.py`: `save_linkedin_post(slug, content_md)` + `list_linkedin_posts()`
+  (escriben/listan en `data/linkedin/posts/`) — implementado en 4.2
 - [ ] Prompt: sección "LinkedIn content & posting discipline" en `prompts.py` con los principios de
   un post de alto impacto (gancho en la 1ª línea, estructura narrativa, autenticidad profesional,
   resonancia emocional, CTA). **Nota arquitectónica:** el `JobAgent` standalone no puede invocar la

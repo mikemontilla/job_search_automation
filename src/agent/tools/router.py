@@ -71,6 +71,36 @@ def _log_application_event(app_id, event_type, title, detail, event_date):
     return log_application_event(app_id, event_type, title, detail, event_date)
 
 
+def _load_linkedin_profile(language):
+    from src.agent.tools.linkedin import load_linkedin_profile
+    return load_linkedin_profile(language)
+
+
+def _save_linkedin_snapshot(content_md):
+    from src.agent.tools.linkedin import save_linkedin_snapshot
+    return save_linkedin_snapshot(content_md)
+
+
+def _save_linkedin_recommendation(section, content_md):
+    from src.agent.tools.linkedin import save_linkedin_recommendation
+    return save_linkedin_recommendation(section, content_md)
+
+
+def _read_linkedin_file(relpath):
+    from src.agent.tools.linkedin import read_linkedin_file
+    return read_linkedin_file(relpath)
+
+
+def _save_linkedin_post(slug, content_md):
+    from src.agent.tools.linkedin import save_linkedin_post
+    return save_linkedin_post(slug, content_md)
+
+
+def _list_linkedin_posts():
+    from src.agent.tools.linkedin import list_linkedin_posts
+    return list_linkedin_posts()
+
+
 TOOL_HANDLERS = {
     "read_profile": lambda args: read_profile(
         args["language"], args.get("section_key")
@@ -115,6 +145,14 @@ TOOL_HANDLERS = {
         args.get("detail"),
         args.get("event_date"),
     ),
+    "load_linkedin_profile": lambda args: _load_linkedin_profile(args.get("language", "en")),
+    "save_linkedin_snapshot": lambda args: _save_linkedin_snapshot(args["content_md"]),
+    "save_linkedin_recommendation": lambda args: _save_linkedin_recommendation(
+        args["section"], args["content_md"]
+    ),
+    "read_linkedin_file": lambda args: _read_linkedin_file(args["relpath"]),
+    "save_linkedin_post": lambda args: _save_linkedin_post(args["slug"], args["content_md"]),
+    "list_linkedin_posts": lambda args: _list_linkedin_posts(),
 }
 
 

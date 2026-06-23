@@ -350,6 +350,113 @@ TOOLS = [
         },
     },
     {
+        "name": "load_linkedin_profile",
+        "description": (
+            "Load everything needed to optimize Miguel's LinkedIn profile: his .md profile "
+            "(source of truth), the last LinkedIn snapshot he pasted/imported (if any), an "
+            "inventory of saved recommendations/posts, and the target market keywords "
+            "aggregated token-free from discovery offers. Use this before drafting any "
+            "recommendation. If there's no snapshot yet, ask Miguel to paste his LinkedIn "
+            "sections or import his data export, then save it with save_linkedin_snapshot."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "language": {
+                    "type": "string",
+                    "enum": ["en", "es", "fr"],
+                    "description": "Profile language to compare against. Defaults to 'en'.",
+                },
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "save_linkedin_snapshot",
+        "description": (
+            "Save the current state of Miguel's LinkedIn profile, as pasted or imported by "
+            "him, to data/linkedin/snapshot.md. Overwrites any previous snapshot."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_md": {
+                    "type": "string",
+                    "description": "Full markdown content of the current LinkedIn profile.",
+                },
+            },
+            "required": ["content_md"],
+        },
+    },
+    {
+        "name": "save_linkedin_recommendation",
+        "description": (
+            "Write an optimization recommendation for one LinkedIn section to "
+            "data/linkedin/recommendations/<section>.md (e.g. section='headline', 'about', "
+            "'experience', 'skills', 'keywords')."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "section": {
+                    "type": "string",
+                    "description": "Section name without extension, e.g. 'headline', 'about', 'experience', 'skills', 'keywords'.",
+                },
+                "content_md": {
+                    "type": "string",
+                    "description": "Full markdown content of the recommendation.",
+                },
+            },
+            "required": ["section", "content_md"],
+        },
+    },
+    {
+        "name": "read_linkedin_file",
+        "description": "Read the raw content of any file under data/linkedin/ (snapshot, a recommendation, or a post draft).",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "relpath": {
+                    "type": "string",
+                    "description": "Path relative to data/linkedin/, e.g. 'recommendations/headline.md' or 'posts/yocto-launch.md'.",
+                },
+            },
+            "required": ["relpath"],
+        },
+    },
+    {
+        "name": "save_linkedin_post",
+        "description": (
+            "Save a LinkedIn post draft to data/linkedin/posts/<slug>.md, built from real "
+            "material (a finished project, course, achievement, or application milestone) "
+            "plus Miguel's profile and target market. Never state anything not present in "
+            "the .md profile or reported by Miguel."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "slug": {
+                    "type": "string",
+                    "description": "Short identifier for the post, e.g. 'yocto-project-launch'.",
+                },
+                "content_md": {
+                    "type": "string",
+                    "description": "Full markdown content of the post draft.",
+                },
+            },
+            "required": ["slug", "content_md"],
+        },
+    },
+    {
+        "name": "list_linkedin_posts",
+        "description": "List saved LinkedIn post drafts (data/linkedin/posts/).",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+        },
+    },
+    {
         "name": "save_session_note",
         "description": (
             "Persist a short summary of what was updated or created in this session. "
