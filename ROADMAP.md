@@ -21,7 +21,8 @@ CLI (main.py)
 src/discovery/  ←→  FastAPI web UI + SQLite store (offers)      [Phase 2 ✅]
 src/tracking/   ←→  applications/events (mismo discovery.db) +  [Phase 3 ✅]
                     dashboard en el mismo servidor FastAPI
-src/linkedin/                                                    [Phase 4 ⬜]
+src/linkedin/   ←→  data/linkedin/ (snapshot + recs) +           [Phase 4 ⬜]
+                    keywords desde offers de discovery (token-free)
 ```
 
 **Regla de escalabilidad:** cada módulo nuevo agrega archivos en `src/`. Si necesita
@@ -319,11 +320,126 @@ ese contexto produce material y estrategia de nivel superior.
 
 ---
 
-## Phase 4 — LinkedIn Optimization ⬜ PENDIENTE
+## Phase 4 — LinkedIn Optimization ⬜ PENDIENTE (planeada)
 
-- Sincronizar perfil LinkedIn con los archivos .md (fuente de verdad)
-- Optimizar para las ofertas objetivo
-- Archivos futuros: `src/linkedin/`
+**Objetivo:** ayudar a Miguel a optimizar su perfil de LinkedIn para que (a) sea consistente
+con y esté enriquecido por los perfiles `.md` (fuente de verdad en `data/resumes/`), (b) use las
+palabras clave que buscan los reclutadores del mercado objetivo —derivadas de las ofertas reales
+que ya recoge discovery—, y (c) posicione mejor sus fortalezas de cara a las empresas a las que se
+postula. La optimización es **generativa y conversacional** (como el interview prep de Fase 3), no
+un pipeline determinista: reusa el agente existente.
+
+**Decisión clave — sin scraping ni login automatizado.** LinkedIn prohíbe el scraping en sus ToS
+y puede banear cuentas incluso con sesión autenticada. En vez de un navegador headless logueado,
+Miguel le pasa el contenido de su perfil al agente por una de dos vías: (1) pegar el texto de las
+secciones, o (2) importar el export oficial de LinkedIn ("Get a copy of your data" → ZIP de CSVs).
+Cero riesgo de cuenta, y suficiente porque optimizar el perfil es una actividad periódica y
+deliberada, no un monitoreo en tiempo real.
+
+```
+  data/resumes/*.md  ──(fuente de verdad)──┐
+                                            ▼
+  Miguel: pega texto / export ZIP ──► data/linkedin/snapshot.md   (estado actual)
+                                            │
+  discovery offers (objetivo) ──► keywords.py: agrega skills/keywords más pedidos (sin tokens)
+                                            │
+                                            ▼
+        Agente (tools/linkedin.py) ──► recommendations/<section>.md
+        (headline, about, experience, skills, keywords)
+                                            │
+                                            ▼
+                  Miguel copia/pega en LinkedIn
+```
+
+**Almacenamiento:** el snapshot y las recomendaciones viven en `data/linkedin/` (consistente con
+`data/resumes/`). Es contenido personal → gitignore de `data/linkedin/*` salvo `.gitkeep` (misma
+decisión que `applications/`). Los `.md` de `data/resumes/` siguen siendo la fuente de verdad del
+contenido profesional; LinkedIn es una *proyección* de ese contenido en el estilo de la plataforma
+(primera persona, atractivo, rico en keywords).
+
+### Convención de datos (`data/linkedin/`)
+```
+data/linkedin/
+  snapshot.md                  # perfil actual de LinkedIn (pegado o importado del export)
+  recommendations/
+    headline.md                # titular optimizado (220 car.) + variantes
+    about.md                   # sección "Acerca de" reescrita
+    experience.md              # bullets por puesto, con métricas y keywords
+    skills.md                  # skills a agregar/reordenar/quitar (orden = los más buscados primero)
+    keywords.md                # keywords del mercado objetivo a sembrar en el perfil
+  posts/
+    <slug>.md                  # borradores de publicaciones para construir presencia
+```
+
+### 4.1 — Entrada de datos + agregación de keywords (`src/linkedin/`, determinista)
+- [ ] `src/linkedin/service.py` — read/write del snapshot y de `recommendations/<section>.md`,
+  inventario de archivos y resolución de rutas con guardia anti-traversal (espejo de
+  `src/tracking/service.py`)
+- [ ] `src/linkedin/keywords.py` — `target_keywords(scope="recommended")`: lee la tabla `offers`
+  de discovery (recomendadas y/o `applying`), agrega y rankea por frecuencia `skills_required` +
+  `skills_nice` + términos del título. Sin llamadas a IA (token-free), da una base de datos real de
+  "qué pide el mercado objetivo"
+- [ ] (opcional) `src/linkedin/import_export.py` — parsea el ZIP del export oficial de LinkedIn
+  (`Profile.csv`, `Positions.csv`, `Skills.csv`, `Education.csv`, `Languages.csv`...) y lo aplana a
+  `snapshot.md`. La vía de pegar texto no necesita esto
+
+### 4.2 — Optimización por el agente (tools + prompt)
+- [ ] `src/agent/tools/linkedin.py`:
+  - `load_linkedin_profile()` — snapshot actual + inventario de recomendaciones + `target_keywords()`
+    + resumen del perfil `.md` para comparar (el "cargar todo para decidir", análogo a
+    `load_application`)
+  - `save_linkedin_snapshot(content_md)` — guarda lo que Miguel pega/importa
+  - `save_linkedin_recommendation(section, content_md)` — escribe `recommendations/<section>.md`
+  - `read_linkedin_file(relpath)` — leer cualquier doc
+- [ ] Registro en `tools/definitions.py` + `tools/router.py` (el agente central no cambia)
+- [ ] Prompt: nueva sección "LinkedIn optimization discipline" en `prompts.py` — flujo:
+  - si no hay snapshot o está viejo → pedirle a Miguel que pegue sus secciones (o importe el export)
+    y guardarlo con `save_linkedin_snapshot`
+  - cargar perfil `.md` (fuente de verdad) + snapshot + `target_keywords`
+  - detectar brechas: contenido del `.md` no reflejado en LinkedIn, keywords muy pedidas que faltan,
+    puntos débiles (titular genérico, "Acerca de" sin métricas/historia, experiencia sin logros
+    cuantificados)
+  - generar recomendaciones por sección en voz de LinkedIn (primera persona, atractivo, buscable por
+    reclutadores) y guardarlas con `save_linkedin_recommendation`
+  - **honestidad estricta**: nunca inventar experiencia/skills que no estén en el perfil `.md`
+    (misma regla que la generación de CV)
+  - decirle a Miguel exactamente qué copiar/pegar en cada sección de LinkedIn
+
+### 4.3 — Estrategia de contenido y publicaciones (en alcance)
+- [ ] `src/agent/tools/linkedin.py`: `save_linkedin_post(slug, content_md)` + `list_linkedin_posts()`
+  (escriben/listan en `data/linkedin/posts/`)
+- [ ] Prompt: sección "LinkedIn content & posting discipline" en `prompts.py` con los principios de
+  un post de alto impacto (gancho en la 1ª línea, estructura narrativa, autenticidad profesional,
+  resonancia emocional, CTA). **Nota arquitectónica:** el `JobAgent` standalone no puede invocar la
+  skill de Claude Code `linkedin-post-writer`, así que esos principios se **incrustan** en el prompt
+  (esa skill queda como la fuente/referencia de los principios, no como dependencia en runtime)
+- [ ] Flujo: partir de material real (proyecto terminado, curso, logro, hito de postulación) +
+  perfil + mercado objetivo → borrador → guardar en `data/linkedin/posts/<slug>.md` → Miguel revisa
+  y publica. Honestidad estricta: el post solo afirma cosas presentes en el perfil `.md` / lo que
+  Miguel reporta
+- [ ] Integración con el engagement proactivo (Fase 1): lo que Miguel comparte al inicio de sesión
+  (nuevas tareas, cursos, logros) es la materia prima para que el agente le sugiera posts
+
+### 4.4 — (opcional) Vista web
+- [ ] (opcional) Vista `/linkedin` en el FastAPI existente: snapshot + recomendaciones + posts
+  renderizados como markdown, reusando `doc.html` y el renderer ya montados en Fase 3
+
+### Integraciones con los demás componentes
+| Desde | Hacia | Mecanismo |
+|---|---|---|
+| Perfil `.md` (Fase 1) | LinkedIn | fuente de verdad; las recomendaciones derivan de él, nunca inventan |
+| Discovery (Fase 2) | LinkedIn | `target_keywords()` agrega skills/keywords más pedidos de las ofertas objetivo (token-free) |
+| Applications (Fase 3) | LinkedIn | antes de entrevistas, reforzar el perfil porque las empresas lo van a mirar |
+| Engagement proactivo (Fase 1) | LinkedIn posts | lo que Miguel reporta al inicio de sesión alimenta borradores de publicaciones |
+| LinkedIn | Agente | tools en `src/agent/tools/linkedin.py` leen `data/linkedin/` + el store de discovery |
+
+### Orden de implementación sugerido
+1. `data/linkedin/` + gitignore + `service.py` (snapshot/recs read/write) — test: pegar y releer un snapshot
+2. `keywords.py` sobre las ofertas reales de discovery — test: ranking de keywords del mercado
+3. Agent tools (`tools/linkedin.py`) + registro — test vía `dispatch()`
+4. Prompt "LinkedIn optimization discipline" — test end-to-end: pegar perfil → recomendaciones guardadas
+5. Estrategia de posts: `save_linkedin_post`/`list_linkedin_posts` + prompt "content & posting" — test: generar y guardar un borrador
+6. (opcional) parser del export ZIP, vista web `/linkedin`
 
 ---
 
@@ -342,3 +458,6 @@ ese contexto produce material y estrategia de nivel superior.
 | Tracking vs status de discovery | `stage` detallado aparte del `status` de triage | Distinta granularidad: triage de oferta vs pipeline de proceso de contratación |
 | Interview prep | Markdown en `applications/<slug>/prep/` + tools de agente | El prep es generativo y conversacional; reusa el agente existente, no un módulo aislado |
 | Estrategia de entrevista | Reusa `pros`/`cons`/`rationale` de discovery | El breakdown de compatibilidad ya identifica fortalezas y brechas a posicionar |
+| Lectura de LinkedIn | Pegar texto / export oficial, sin scraping | ToS prohíbe scraping y banean cuentas; optimizar es periódico, no en tiempo real |
+| Optimización LinkedIn | Markdown en `data/linkedin/` + tools de agente | Generativo y conversacional; reusa el agente, como el interview prep |
+| Keywords objetivo | Agregación determinista de `offers` de discovery | Datos reales del mercado, token-free; el agente prioriza sobre esa base |
