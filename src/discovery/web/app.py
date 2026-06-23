@@ -11,6 +11,7 @@ from src.agent.config import APPLICATIONS_DIR
 from src.discovery import pipeline, store
 from src.discovery.config import STATIC_DIR, TEMPLATES_DIR
 from src.discovery.models import OfferStatus
+from src.linkedin import service as linkedin_service
 from src.tracking import service, store as tracking_store
 from src.tracking.models import ApplicationEvent, ApplicationStage, EventType
 
@@ -184,5 +185,38 @@ def application_doc(request: Request, app_id: str, relpath: str):
         return HTMLResponse("Not found", status_code=404)
     html = md.markdown(path.read_text(encoding="utf-8"))
     return templates.TemplateResponse(
-        request, "doc.html", {"title": relpath, "html": html, "app_id": app_id}
+        request,
+        "doc.html",
+        {
+            "title": relpath,
+            "html": html,
+            "back_url": f"/applications/{app_id}",
+            "back_label": "Back to application",
+        },
+    )
+
+
+@app.get("/linkedin", response_class=HTMLResponse)
+def linkedin_index(request: Request):
+    snapshot_md = linkedin_service.read_snapshot()
+    return templates.TemplateResponse(
+        request,
+        "linkedin.html",
+        {
+            "snapshot_html": md.markdown(snapshot_md) if snapshot_md else None,
+            "files": linkedin_service.file_inventory(),
+        },
+    )
+
+
+@app.get("/linkedin/doc/{relpath:path}", response_class=HTMLResponse)
+def linkedin_doc(request: Request, relpath: str):
+    path = linkedin_service.resolve_file(relpath)
+    if not path or path.suffix != ".md":
+        return HTMLResponse("Not found", status_code=404)
+    html = md.markdown(path.read_text(encoding="utf-8"))
+    return templates.TemplateResponse(
+        request,
+        "doc.html",
+        {"title": relpath, "html": html, "back_url": "/linkedin", "back_label": "Back to LinkedIn"},
     )

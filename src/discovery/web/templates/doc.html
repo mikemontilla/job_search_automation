@@ -2,7 +2,7 @@
 {% block title %}{{ title }} — Job Discovery{% endblock %}
 {% block content %}
 
-<a href="/applications/{{ app_id }}" class="back">← Back to application</a>
+<a href="{{ back_url }}" class="back">← {{ back_label }}</a>
 
 <article class="detail markdown-doc">
   {{ html | safe }}

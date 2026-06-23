@@ -321,7 +321,7 @@ ese contexto produce material y estrategia de nivel superior.
 
 ---
 
-## Phase 4 — LinkedIn Optimization ✅ COMPLETADA (2026-06-23, salvo 4.4 opcional)
+## Phase 4 — LinkedIn Optimization ✅ COMPLETADA (2026-06-23)
 
 **Objetivo:** ayudar a Miguel a optimizar su perfil de LinkedIn para que (a) sea consistente
 con y esté enriquecido por los perfiles `.md` (fuente de verdad en `data/resumes/`), (b) use las
@@ -424,8 +424,9 @@ data/linkedin/
   (nuevas tareas, cursos, logros) es la materia prima para que el agente le sugiera posts
 
 ### 4.4 — (opcional) Vista web
-- [ ] (opcional) Vista `/linkedin` en el FastAPI existente: snapshot + recomendaciones + posts
-  renderizados como markdown, reusando `doc.html` y el renderer ya montados en Fase 3
+- [x] Vista `/linkedin` en el FastAPI existente: snapshot + recomendaciones + posts renderizados
+  como markdown. `doc.html` se generalizó (`back_url`/`back_label` en vez de `app_id` fijo) para
+  servir tanto `/applications/{id}/doc/...` como `/linkedin/doc/...` sin duplicar template
 
 ### Integraciones con los demás componentes
 | Desde | Hacia | Mecanismo |
