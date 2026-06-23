@@ -375,7 +375,7 @@ data/linkedin/
 - [x] `src/linkedin/service.py` — read/write del snapshot y de `recommendations/<section>.md`,
   inventario de archivos y resolución de rutas con guardia anti-traversal (espejo de
   `src/tracking/service.py`)
-- [ ] `src/linkedin/keywords.py` — `target_keywords(scope="recommended")`: lee la tabla `offers`
+- [x] `src/linkedin/keywords.py` — `target_keywords(scope="recommended")`: lee la tabla `offers`
   de discovery (recomendadas y/o `applying`), agrega y rankea por frecuencia `skills_required` +
   `skills_nice` + términos del título. Sin llamadas a IA (token-free), da una base de datos real de
   "qué pide el mercado objetivo"
