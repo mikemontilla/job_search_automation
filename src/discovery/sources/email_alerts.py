@@ -65,6 +65,7 @@ class EmailAlertsSource(Source):
         lookback_days: int = 14,
         max_results: int = 20,
     ):
+        self.name = "Email alerts (LinkedIn/Indeed)"
         self.senders = senders or _DEFAULT_SENDERS
         self.patterns = [re.compile(p, re.I) for p in (link_patterns or _DEFAULT_LINK_PATTERNS)]
         self.lookback_days = lookback_days

@@ -1,0 +1,22 @@
+<div id="run-status" class="run-status"
+     {% if status.running %}hx-get="/run/status" hx-trigger="every 1.5s" hx-swap="outerHTML"{% endif %}>
+  {% if status.running %}
+  <div class="run-status-header">
+    <span class="spinner"></span>
+    <span>Searching{% if status.source %} — {{ status.source }}{% endif %}…</span>
+  </div>
+  {% elif status.events %}
+  <div class="run-status-header done">
+    <span>✅ Done — added {{ status.totals.added }}, already known {{ status.totals.skipped }}, errors {{ status.totals.error }}.</span>
+    <a href="/" class="btn-sm">Refresh list</a>
+  </div>
+  {% endif %}
+
+  {% if status.events %}
+  <ul class="run-events">
+    {% for ev in status.events[:20] %}
+    <li class="run-ev run-ev-{{ ev.kind }}">{{ ev.text }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>

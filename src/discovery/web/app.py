@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from src.agent.config import APPLICATIONS_DIR
-from src.discovery import pipeline, store
+from src.discovery import pipeline, run_status, store
 from src.discovery.config import STATIC_DIR, TEMPLATES_DIR
 from src.discovery.models import OfferStatus
 from src.linkedin import service as linkedin_service
@@ -29,6 +29,7 @@ app = FastAPI(title="Job Discovery", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.mount("/files", StaticFiles(directory=APPLICATIONS_DIR), name="files")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+templates.env.globals["run_status_snapshot"] = run_status.snapshot
 
 _ACTIVE_STATUSES = [s.value for s in OfferStatus]
 _STAGES = [s.value for s in ApplicationStage]
@@ -81,9 +82,22 @@ def ingest(url: str = Form(...)):
 
 
 @app.post("/run")
-def run_pipeline(background: BackgroundTasks):
-    background.add_task(pipeline.run)
-    return HTMLResponse("Search started. New offers will appear after refresh.")
+def run_pipeline(request: Request, background: BackgroundTasks):
+    # BackgroundTasks only run after the response is sent, so mark "running" here
+    # synchronously — otherwise this response would render the pre-start (empty) state.
+    if not run_status.is_running():
+        run_status.start()
+        background.add_task(pipeline.run)
+    return templates.TemplateResponse(
+        request, "_run_status.html", {"status": run_status.snapshot()}
+    )
+
+
+@app.get("/run/status", response_class=HTMLResponse)
+def run_pipeline_status(request: Request):
+    return templates.TemplateResponse(
+        request, "_run_status.html", {"status": run_status.snapshot()}
+    )
 
 
 @app.post("/offer/{offer_id}/status")

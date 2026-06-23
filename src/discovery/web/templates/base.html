@@ -14,10 +14,13 @@
       <a href="/applications" class="nav-link">📋 Applications</a>
       <a href="/linkedin" class="nav-link">🔗 LinkedIn</a>
     </nav>
-    <form class="run-form" hx-post="/run" hx-target="#flash" hx-swap="innerHTML">
+    <form class="run-form" hx-post="/run" hx-target="#run-status" hx-swap="outerHTML">
       <button type="submit" class="btn btn-run">Run search now</button>
     </form>
   </header>
+
+  {% set status = run_status_snapshot() %}
+  {% include "_run_status.html" %}
 
   <div id="flash" class="flash"></div>
 

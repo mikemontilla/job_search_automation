@@ -233,3 +233,24 @@ table.offers { width: 100%; border-collapse: collapse; background: var(--card);
 
 .markdown-doc { line-height: 1.6; }
 .markdown-doc h1, .markdown-doc h2, .markdown-doc h3 { margin-top: 1.2rem; }
+
+/* ── Run status panel ──────────────────────────────────────── */
+.run-status:empty { display: none; }
+.run-status {
+  max-width: 1100px; margin: 0.6rem auto 0; padding: 0.7rem 1rem;
+  background: var(--card); border: 1px solid var(--line); border-radius: 8px; font-size: 0.88rem;
+}
+.run-status-header { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
+.run-status-header.done { color: var(--green); justify-content: space-between; }
+.run-events {
+  list-style: none; margin: 0.5rem 0 0; padding: 0; max-height: 220px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 0.25rem;
+}
+.run-ev {
+  padding: 0.25rem 0.5rem; border-radius: 5px; font-size: 0.82rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.run-ev-source { background: #eef1f6; color: #1d4ed8; font-weight: 600; }
+.run-ev-added { background: var(--green-bg); color: var(--green); }
+.run-ev-skipped { background: #f3f4f6; color: var(--muted); }
+.run-ev-error { background: var(--red-bg); color: var(--red); }
