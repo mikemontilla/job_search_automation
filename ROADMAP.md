@@ -15,13 +15,14 @@ CLI (main.py)
         │     ├─ CVGenerator    (tools/cv_gen.py)               [Phase 1 ✅]
         │     ├─ JobLoader      (tools/jobs.py)                 [Phase 1 ✅]
         │     ├─ DiscoveryTools (tools/discovery.py)            [Phase 2.3 ✅]
-        │     └─ ApplicationTools (tools/applications.py)       [Phase 3.2 ✅]
+        │     ├─ ApplicationTools (tools/applications.py)       [Phase 3.2 ✅]
+        │     └─ LinkedInTools  (tools/linkedin.py)             [Phase 4.2/4.3 ✅]
         └─ prompts.py
 
 src/discovery/  ←→  FastAPI web UI + SQLite store (offers)      [Phase 2 ✅]
 src/tracking/   ←→  applications/events (mismo discovery.db) +  [Phase 3 ✅]
                     dashboard en el mismo servidor FastAPI
-src/linkedin/   ←→  data/linkedin/ (snapshot + recs) +           [Phase 4 ⬜]
+src/linkedin/   ←→  data/linkedin/ (snapshot + recs) +           [Phase 4 ✅]
                     keywords desde offers de discovery (token-free)
 ```
 
@@ -320,7 +321,7 @@ ese contexto produce material y estrategia de nivel superior.
 
 ---
 
-## Phase 4 — LinkedIn Optimization ⬜ PENDIENTE (planeada)
+## Phase 4 — LinkedIn Optimization ✅ COMPLETADA (2026-06-23, salvo 4.4 opcional)
 
 **Objetivo:** ayudar a Miguel a optimizar su perfil de LinkedIn para que (a) sea consistente
 con y esté enriquecido por los perfiles `.md` (fuente de verdad en `data/resumes/`), (b) use las
@@ -394,7 +395,7 @@ data/linkedin/
   - (de 4.3) `save_linkedin_post(slug, content_md)` + `list_linkedin_posts()` — se implementaron
     junto con el resto del archivo, ya que son el mismo patrón CRUD
 - [x] Registro en `tools/definitions.py` + `tools/router.py` (el agente central no cambia)
-- [ ] Prompt: nueva sección "LinkedIn optimization discipline" en `prompts.py` — flujo:
+- [x] Prompt: nueva sección "LinkedIn optimization discipline" en `prompts.py` — flujo:
   - si no hay snapshot o está viejo → pedirle a Miguel que pegue sus secciones (o importe el export)
     y guardarlo con `save_linkedin_snapshot`
   - cargar perfil `.md` (fuente de verdad) + snapshot + `target_keywords`
@@ -410,16 +411,16 @@ data/linkedin/
 ### 4.3 — Estrategia de contenido y publicaciones (en alcance)
 - [x] `src/agent/tools/linkedin.py`: `save_linkedin_post(slug, content_md)` + `list_linkedin_posts()`
   (escriben/listan en `data/linkedin/posts/`) — implementado en 4.2
-- [ ] Prompt: sección "LinkedIn content & posting discipline" en `prompts.py` con los principios de
+- [x] Prompt: sección "LinkedIn content & posting discipline" en `prompts.py` con los principios de
   un post de alto impacto (gancho en la 1ª línea, estructura narrativa, autenticidad profesional,
   resonancia emocional, CTA). **Nota arquitectónica:** el `JobAgent` standalone no puede invocar la
   skill de Claude Code `linkedin-post-writer`, así que esos principios se **incrustan** en el prompt
   (esa skill queda como la fuente/referencia de los principios, no como dependencia en runtime)
-- [ ] Flujo: partir de material real (proyecto terminado, curso, logro, hito de postulación) +
+- [x] Flujo: partir de material real (proyecto terminado, curso, logro, hito de postulación) +
   perfil + mercado objetivo → borrador → guardar en `data/linkedin/posts/<slug>.md` → Miguel revisa
   y publica. Honestidad estricta: el post solo afirma cosas presentes en el perfil `.md` / lo que
   Miguel reporta
-- [ ] Integración con el engagement proactivo (Fase 1): lo que Miguel comparte al inicio de sesión
+- [x] Integración con el engagement proactivo (Fase 1): lo que Miguel comparte al inicio de sesión
   (nuevas tareas, cursos, logros) es la materia prima para que el agente le sugiera posts
 
 ### 4.4 — (opcional) Vista web
