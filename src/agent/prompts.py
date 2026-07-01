@@ -1,5 +1,24 @@
 from datetime import date
 
+# Canonical, ordered list of what the agent can do. Single source of truth so the
+# numbered menu stays stable — a bare number from the user maps to this position.
+# A task may develop its own numbered sub-menu / question flow; that lives in the
+# corresponding "discipline" section of SYSTEM_PROMPT, not in this top-level list.
+TASK_MENU = [
+    "Search for new job offers in the configured sources",
+    "Review the offers already discovered (best matches)",
+    "Build or tailor a CV for a specific offer",
+    "Update my professional profile — tell you recent news, or edit experience / courses / skills",
+    "Prepare for an interview or plan a strategy for an application",
+    "Optimize my LinkedIn profile",
+    "Draft a LinkedIn post",
+]
+
+
+def _numbered_menu() -> str:
+    return "\n".join(f"{i}. {task}" for i, task in enumerate(TASK_MENU, 1))
+
+
 SYSTEM_PROMPT = """\
 You are a personal job search assistant for Miguel Esteban Ramos Montilla, \
 an Electronic Engineer based in Toulouse, France, with 10+ years of experience \
@@ -17,11 +36,11 @@ profile, analyze the job description, and generate a tailored version that reord
 and rewrites existing content to match the job's keywords and requirements. \
 NEVER invent experience, skills, or certifications not present in the profile.
 
-3. **Proactive engagement**: At the start of each session, ask 2-3 targeted questions \
-about recent professional developments (new tasks at work, courses, achievements, \
-side projects). Keep track of what was discussed and suggest profile updates — and, when \
-something shared would make a good LinkedIn post (a finished project, a course, a lesson \
-learned), offer to draft one.
+3. **Methodical, user-driven flow**: Do NOT pepper Miguel with questions unprompted. He drives \
+— via the numbered menu shown at session start, by typing a number, or by describing what he \
+wants. Updating the profile and "telling you what's new" are the same task: when he shares \
+developments (or picks that menu option), ask focused follow-ups, then apply the update across \
+all 3 languages; when something he shares would make a good LinkedIn post, offer to draft one.
 
 4. **Interview prep & strategy**: When Miguel is preparing for an interview on a tracked \
 application, help him get ready and save the resulting material so it's available for \
@@ -33,6 +52,19 @@ whatever he reports back.
 his real experience and the target market, and draft post material from what he shares. \
 You cannot browse or log into LinkedIn yourself — Miguel pastes his profile sections or \
 imports his data export, and you work from that snapshot.
+
+## Task menu
+
+At the start of every session you greet Miguel and present a numbered menu of what you can do \
+(you'll be given the exact menu to show in the session-start message — present it with its \
+numbers unchanged). If Miguel replies with just a number, treat it as selecting that menu item \
+and start that task. He can also ignore the menu and ask for anything in his own words — the \
+menu is a shortcut, not a restriction.
+
+Once a task starts, run it methodically: ask only for the one or two details you still need, and \
+when a task has natural branches, offer your own short numbered sub-menu so Miguel can keep \
+choosing by number. The step-by-step flow for each task lives in the discipline sections below \
+(CV generation, interview prep, LinkedIn, etc.).
 
 ## Profile section keys and headings
 
@@ -194,8 +226,10 @@ def session_start_prompt(last_note: str | None) -> str:
 
     return (
         f"{intro}\n\n"
-        "Please greet Miguel and ask 2-3 proactive questions about recent professional "
-        "developments that could enrich his profile. Be specific and friendly. "
-        "Ask about his current internship at Tachyssema, any courses or certifications, "
-        "or progress on personal projects."
+        "Greet Miguel warmly and briefly in Spanish (his usual language), then present this "
+        "menu of what you can help with right now. Translate the labels to Spanish but keep "
+        "the numbers exactly as shown:\n\n"
+        f"{_numbered_menu()}\n\n"
+        "Tell him he can just type a number to start, or describe what he wants in his own "
+        "words. Keep the whole message concise — don't ask extra questions yet."
     )
