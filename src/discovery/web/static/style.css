@@ -247,6 +247,7 @@ table.offers { width: 100%; border-collapse: collapse; background: var(--card);
   display: flex; flex-direction: column; gap: 0.25rem;
 }
 .run-ev {
+  flex-shrink: 0;
   padding: 0.25rem 0.5rem; border-radius: 5px; font-size: 0.82rem;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
